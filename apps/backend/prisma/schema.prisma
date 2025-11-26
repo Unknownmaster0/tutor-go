@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  email            String    @unique @db.VarChar(255)
+  passwordHash     String    @map("password_hash") @db.VarChar(255)
+  name             String    @db.VarChar(255)
+  role             Role
+  phone            String?   @db.VarChar(20)
+  emailVerified    Boolean   @default(false) @map("email_verified")
+  suspended        Boolean   @default(false)
+  suspensionReason String?   @map("suspension_reason") @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamp()
+
+  // Relations
+  bookingsAsTutor    Booking[]      @relation("TutorBookings")
+  bookingsAsStudent  Booking[]      @relation("StudentBookings")
+  reviewsAsTutor     Review[]       @relation("TutorReviews")
+  reviewsAsStudent   Review[]       @relation("StudentReviews")
+  sentMessages       Message[]      @relation("SentMessages")
+  receivedMessages   Message[]      @relation("ReceivedMessages")
+  notifications      Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+enum Role {
+  student
+  tutor
+  admin
+}
+
+model Booking {
+  id                 String        @id @default(uuid()) @db.Uuid
+  tutorId            String        @map("tutor_id") @db.Uuid
+  studentId          String        @map("student_id") @db.Uuid
+  subject            String        @db.VarChar(100)
+  startTime          DateTime      @map("start_time") @db.Timestamp()
+  endTime            DateTime      @map("end_time") @db.Timestamp()
+  status             BookingStatus
+  totalAmount        Decimal       @map("total_amount") @db.Decimal(10, 2)
+  paymentId          String?       @map("payment_id") @db.Uuid
+  cancellationReason String?       @map("cancellation_reason") @db.Text
+  createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt          DateTime      @updatedAt @map("updated_at") @db.Timestamp()
+
+  // Relations
+  tutor   User      @relation("TutorBookings", fields: [tutorId], references: [id])
+  student User      @relation("StudentBookings", fields: [studentId], references: [id])
+  payment Payment?
+  review  Review?
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@index([status])
+  @@index([startTime])
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+}
+
+model Payment {
+  id              String        @id @default(uuid()) @db.Uuid
+  bookingId       String        @unique @map("booking_id") @db.Uuid
+  stripePaymentId String?       @map("stripe_payment_id") @db.VarChar(255)
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("USD") @db.VarChar(3)
+  status          PaymentStatus
+  refundAmount    Decimal?      @map("refund_amount") @db.Decimal(10, 2)
+  refundReason    String?       @map("refund_reason") @db.Text
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamp()
+
+  // Relations
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
+  @@index([status])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  refunded
+}
+
+model Review {
+  id        String   @id @default(uuid()) @db.Uuid
+  tutorId   String   @map("tutor_id") @db.Uuid
+  studentId String   @map("student_id") @db.Uuid
+  bookingId String   @unique @map("booking_id") @db.Uuid
+  rating    Int      @db.Integer
+  comment   String?  @db.Text
+  flagged   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  tutor   User    @relation("TutorReviews", fields: [tutorId], references: [id])
+  student User    @relation("StudentReviews", fields: [studentId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@map("reviews")
+}
+
+model Message {
+  id             String   @id @default(uuid()) @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  senderId       String   @map("sender_id") @db.Uuid
+  receiverId     String   @map("receiver_id") @db.Uuid
+  message        String   @db.Text
+  read           Boolean  @default(false)
+  flagged        Boolean  @default(false)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(255)
+  message   String           @db.Text
+  read      Boolean          @default(false)
+  metadata  Json?            @db.JsonB
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  booking
+  payment
+  message
+  review
+}

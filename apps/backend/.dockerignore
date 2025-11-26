@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Testing
+coverage
+.nyc_output
+**/__tests__
+**/*.test.ts
+**/*.spec.ts
+
+# Development
+.env
+.env.local
+.env.development
+.env.test
+
+# Build artifacts
+dist
+
+# Logs
+logs
+*.log
+
+# IDE
+.vscode
+.idea
+
+# Documentation
+*.md
+README.md
+IMPLEMENTATION_SUMMARY.md
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc.json
