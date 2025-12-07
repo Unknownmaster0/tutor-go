@@ -129,4 +129,78 @@ describe('TeacherCard', () => {
     expect(card).toHaveClass('hover:shadow-medium');
     expect(card).toHaveClass('cursor-pointer');
   });
-});
+
+  describe('Accessibility Tests', () => {
+    it('has proper ARIA label describing the teacher card', () => {
+      render(<TeacherCard teacher={mockTeacher} />);
+
+      const card = screen.getByLabelText('John Doe, rating 4.5, 50 per hour');
+      expect(card).toBeInTheDocument();
+    });
+
+    it('is keyboard navigable with role="button"', () => {
+      render(<TeacherCard teacher={mockTeacher} />);
+
+      const card = screen.getByText('John Doe').closest('[role="button"]');
+      expect(card).toHaveAttribute('tabIndex', '0');
+    });
+
+    it('responds to keyboard Enter key', () => {
+      const mockOnClick = vi.fn();
+      render(<TeacherCard teacher={mockTeacher} onClick={mockOnClick} />);
+
+      const card = screen.getByRole('button');
+      fireEvent.keyDown(card, { key: 'Enter' });
+
+      expect(mockOnClick).toHaveBeenCalledWith('teacher-1');
+    });
+
+    it('responds to keyboard Space key', () => {
+      const mockOnClick = vi.fn();
+      render(<TeacherCard teacher={mockTeacher} onClick={mockOnClick} />);
+
+      const card = screen.getByRole('button');
+      fireEvent.keyDown(card, { key: ' ' });
+
+      expect(mockOnClick).toHaveBeenCalledWith('teacher-1');
+    });
+
+    it('has aria-label for rating information', () => {
+      render(<TeacherCard teacher={mockTeacher} />);
+
+      const ratingDiv = screen.getByLabelText('Rating: 4.5 out of 5');
+      expect(ratingDiv).toBeInTheDocument();
+    });
+
+    it('has aria-label for hourly rate', () => {
+      render(<TeacherCard teacher={mockTeacher} />);
+
+      const rateSpan = screen.getByLabelText('Hourly rate');
+      expect(rateSpan).toBeInTheDocument();
+    });
+
+    it('has role="list" for subjects with role="listitem" for each', () => {
+      render(<TeacherCard teacher={mockTeacher} />);
+
+      const list = screen.getByRole('list', { name: /specialties/i });
+      expect(list).toBeInTheDocument();
+
+      const items = screen.getAllByRole('listitem');
+      expect(items.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('marks profile picture as decorative with aria-hidden', () => {
+      render(<TeacherCard teacher={mockTeacher} />);
+
+      const img = screen.getByAltText("John Doe's profile picture");
+      expect(img).toHaveAttribute('alt');
+    });
+
+    it('marks initials avatar as decorative', () => {
+      const teacherWithoutPicture = { ...mockTeacher, profilePicture: undefined };
+      render(<TeacherCard teacher={teacherWithoutPicture} />);
+
+      const avatar = screen.getByText('J').closest('div');
+      expect(avatar?.parentElement).toHaveAttribute('aria-hidden', 'true');
+    });
+  });

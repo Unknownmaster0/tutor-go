@@ -28,9 +28,7 @@ export const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({
   // Get the other participant's name
   const getOtherParticipantName = (): string => {
     if (conversation.participantNames) {
-      const otherParticipantId = conversation.participants.find(
-        (id) => id !== currentUserId
-      );
+      const otherParticipantId = conversation.participants.find((id) => id !== currentUserId);
       if (otherParticipantId && conversation.participantNames[otherParticipantId]) {
         return conversation.participantNames[otherParticipantId];
       }
@@ -52,10 +50,25 @@ export const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({
       : conversation.lastMessage;
 
   return (
-    <Card hover onClick={handleClick} className="flex items-start gap-4">
+    <Card
+      hover
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      className="flex items-start gap-4 cursor-pointer"
+      aria-label={`Conversation with ${otherParticipantName}${conversation.unreadCount > 0 ? ` (${conversation.unreadCount} unread messages)` : ''}`}
+    >
       {/* Avatar Placeholder */}
       <div className="flex-shrink-0">
-        <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+        <div
+          className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center"
+          aria-hidden="true"
+        >
           <span className="text-primary-600 text-lg font-semibold">
             {otherParticipantName.charAt(0).toUpperCase()}
           </span>
@@ -68,19 +81,23 @@ export const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({
           <h4 className="text-sm font-semibold text-neutral-900 truncate">
             {otherParticipantName}
           </h4>
-          <span className="text-xs text-neutral-500 flex-shrink-0">
+          <time
+            className="text-xs text-neutral-500 flex-shrink-0"
+            title={new Date(conversation.lastMessageTime).toLocaleString()}
+          >
             {formattedTime}
-          </span>
+          </time>
         </div>
 
-        <p className="text-sm text-neutral-600 line-clamp-2 mb-2">
-          {truncatedMessage}
-        </p>
+        <p className="text-sm text-neutral-600 line-clamp-2 mb-2">{truncatedMessage}</p>
 
         {/* Unread Badge */}
         {conversation.unreadCount > 0 && (
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-600 text-white">
+            <span
+              className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-600 text-white"
+              aria-label={`${conversation.unreadCount} unread messages`}
+            >
               {conversation.unreadCount} unread
             </span>
           </div>
