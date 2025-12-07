@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ProfileEditForm } from '@/components/tutor/profile-edit-form';
 import { TutorProfile } from '@/types/tutor.types';
+import { vi } from 'vitest';
 
 const mockProfile: TutorProfile = {
   id: '1',

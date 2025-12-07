@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { UserList } from '@/components/admin/user-list';
 import { User } from '@/types/admin.types';
+import { vi } from 'vitest';
 
 describe('UserList', () => {
   const mockUsers: User[] = [

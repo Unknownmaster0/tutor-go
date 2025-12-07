@@ -2,14 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { SubjectManager } from '@/components/tutor/subject-manager';
 import { TutorProfile } from '@/types/tutor.types';
 import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
 
 const mockProfile: TutorProfile = {
   id: '1',

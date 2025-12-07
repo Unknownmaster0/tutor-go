@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { FlaggedContentList } from '@/components/admin/flagged-content-list';
 import { FlaggedContent } from '@/types/admin.types';
+import { vi } from "vitest";
 
 describe('FlaggedContentList', () => {
   const mockContent: FlaggedContent[] = [

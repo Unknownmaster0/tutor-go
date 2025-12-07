@@ -143,7 +143,9 @@ describe('Student Dashboard Page', () => {
     render(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Welcome, Test Student/)).toBeInTheDocument();
+      // Look for the welcome text and the user name separately since they might be in different elements
+      expect(screen.getByText('Welcome,')).toBeInTheDocument();
+      expect(screen.getByText('Test Student')).toBeInTheDocument();
     });
   });
 
@@ -153,7 +155,7 @@ describe('Student Dashboard Page', () => {
     await waitFor(() => {
       const johnDoeElements = screen.getAllByText('John Doe');
       const janeSmithElements = screen.getAllByText('Jane Smith');
-      
+
       // Should find at least one instance of each teacher
       expect(johnDoeElements.length).toBeGreaterThan(0);
       expect(janeSmithElements.length).toBeGreaterThan(0);
@@ -192,7 +194,7 @@ describe('Student Dashboard Page', () => {
     await waitFor(() => {
       expect(screen.getByText('No bookings yet')).toBeInTheDocument();
       expect(
-        screen.getByText('Start by booking a session with a teacher above.')
+        screen.getByText('Start by booking a session with a teacher above.'),
       ).toBeInTheDocument();
     });
   });
@@ -211,7 +213,7 @@ describe('Student Dashboard Page', () => {
     await waitFor(() => {
       expect(screen.getByText('No conversations yet')).toBeInTheDocument();
       expect(
-        screen.getByText('Start chatting with your teachers after booking a session.')
+        screen.getByText('Start chatting with your teachers after booking a session.'),
       ).toBeInTheDocument();
     });
   });
@@ -308,9 +310,7 @@ describe('Student Dashboard Page', () => {
     const { container } = render(<DashboardPage />);
 
     await waitFor(() => {
-      const bookingCards = container.querySelectorAll(
-        'section:nth-of-type(2) .space-y-4 > div'
-      );
+      const bookingCards = container.querySelectorAll('section:nth-of-type(2) .space-y-4 > div');
       expect(bookingCards.length).toBeLessThanOrEqual(5);
     });
   });
@@ -332,9 +332,7 @@ describe('Student Dashboard Page', () => {
     const { container } = render(<DashboardPage />);
 
     await waitFor(() => {
-      const chatCards = container.querySelectorAll(
-        'section:nth-of-type(3) .space-y-4 > div'
-      );
+      const chatCards = container.querySelectorAll('section:nth-of-type(3) .space-y-4 > div');
       expect(chatCards.length).toBeLessThanOrEqual(5);
     });
   });
@@ -346,7 +344,7 @@ describe('Student Dashboard Page', () => {
     await waitFor(() => {
       // Check that the Available Teachers section exists
       expect(screen.getByText('Available Teachers')).toBeInTheDocument();
-      
+
       // Verify no student names appear (other than the logged-in user)
       expect(screen.queryByText('Other Student')).not.toBeInTheDocument();
       expect(screen.queryByText('Another Student')).not.toBeInTheDocument();

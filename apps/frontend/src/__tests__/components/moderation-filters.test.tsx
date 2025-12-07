@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ModerationFilters } from '@/components/admin/moderation-filters';
+import { vi } from 'vitest';
 
 describe('ModerationFilters', () => {
   const mockOnFilterChange = vi.fn();

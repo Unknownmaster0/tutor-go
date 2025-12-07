@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { UserDetailsModal } from '@/components/admin/user-details-modal';
 import { User } from '@/types/admin.types';
+import { vi } from 'vitest';
 
 describe('UserDetailsModal', () => {
   const mockUser: User = {

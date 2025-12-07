@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -76,7 +76,7 @@ export default function RegisterPage() {
   return (
     <div>
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
+        <h1 className="text-3xl font-bold text-gray-900">Create your account</h1>
         <p className="mt-2 text-sm text-gray-600">
           Already have an account?{' '}
           <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
@@ -85,9 +85,9 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit} aria-label="Registration form">
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          <div className="rounded-md bg-red-50 p-4" role="alert" aria-live="polite">
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}

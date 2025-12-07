@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { UserSearch } from '@/components/admin/user-search';
+import { vi } from 'vitest';
 
 describe('UserSearch', () => {
   const mockOnSearch = vi.fn();

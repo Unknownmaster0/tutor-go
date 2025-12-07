@@ -3,22 +3,6 @@ import { AvailabilityManager } from '@/components/tutor/availability-manager';
 import { TutorProfile } from '@/types/tutor.types';
 import { apiClient } from '@/lib/api-client';
 import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
 
 vi.mock('@/lib/api-client', () => ({
   apiClient: {

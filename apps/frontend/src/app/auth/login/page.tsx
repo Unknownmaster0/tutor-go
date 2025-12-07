@@ -10,7 +10,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -37,11 +37,11 @@ export default function LoginPage() {
 
     try {
       const user = await login(formData);
-      
+
       // Check for redirect parameter
       const urlParams = new URLSearchParams(window.location.search);
       const redirect = urlParams.get('redirect');
-      
+
       if (redirect) {
         // If there's a redirect parameter, use it
         router.push(redirect);
@@ -63,7 +63,7 @@ export default function LoginPage() {
   return (
     <div>
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900">Sign in to your account</h2>
+        <h1 className="text-3xl font-bold text-gray-900">Sign in to your account</h1>
         <p className="mt-2 text-sm text-gray-600">
           Don&apos;t have an account?{' '}
           <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
@@ -72,9 +72,9 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit} aria-label="Login form">
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          <div className="rounded-md bg-red-50 p-4" role="alert" aria-live="polite">
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
@@ -115,7 +115,10 @@ export default function LoginPage() {
 
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            <Link href="/auth/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link
+              href="/auth/forgot-password"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Forgot your password?
             </Link>
           </div>

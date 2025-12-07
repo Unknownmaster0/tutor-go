@@ -2,19 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { TutorBookingOverview } from '@/components/tutor/tutor-booking-overview';
 import { apiClient } from '@/lib/api-client';
 import { Booking } from '@/types/booking.types';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 vi.mock('@/lib/api-client', () => ({
   apiClient: {
@@ -33,12 +21,12 @@ const mockUpcomingBookings: Booking[] = [
     studentId: 'student1',
     studentName: 'John Student',
     subject: 'Mathematics',
-    startTime: new Date('2025-12-01T10:00:00'),
-    endTime: new Date('2025-12-01T11:00:00'),
+    startTime: new Date(Date.now() + 86400000), // Tomorrow
+    endTime: new Date(Date.now() + 90000000), // Tomorrow + 1 hour
     status: 'confirmed',
     totalAmount: 50,
-    createdAt: new Date('2025-11-01'),
-    updatedAt: new Date('2025-11-01'),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
   {
     id: '2',
@@ -46,12 +34,12 @@ const mockUpcomingBookings: Booking[] = [
     studentId: 'student2',
     studentName: 'Jane Student',
     subject: 'Physics',
-    startTime: new Date('2025-12-02T14:00:00'),
-    endTime: new Date('2025-12-02T15:00:00'),
+    startTime: new Date(Date.now() + 172800000), // Day after tomorrow
+    endTime: new Date(Date.now() + 176400000), // Day after tomorrow + 1 hour
     status: 'confirmed',
     totalAmount: 60,
-    createdAt: new Date('2025-11-02'),
-    updatedAt: new Date('2025-11-02'),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 
@@ -61,24 +49,24 @@ const mockCompletedBookings: Booking[] = [
     tutorId: 'tutor1',
     studentId: 'student3',
     subject: 'Chemistry',
-    startTime: new Date('2025-10-01T10:00:00'),
-    endTime: new Date('2025-10-01T11:00:00'),
+    startTime: new Date(Date.now() - 2592000000), // 30 days ago
+    endTime: new Date(Date.now() - 2588400000), // 30 days ago + 1 hour
     status: 'completed',
     totalAmount: 55,
-    createdAt: new Date('2025-09-01'),
-    updatedAt: new Date('2025-10-01'),
+    createdAt: new Date(Date.now() - 2678400000), // 31 days ago
+    updatedAt: new Date(Date.now() - 2592000000), // 30 days ago
   },
   {
     id: '4',
     tutorId: 'tutor1',
     studentId: 'student4',
     subject: 'Biology',
-    startTime: new Date('2025-11-15T10:00:00'),
-    endTime: new Date('2025-11-15T11:00:00'),
+    startTime: new Date(Date.now() - 1296000000), // 15 days ago
+    endTime: new Date(Date.now() - 1292400000), // 15 days ago + 1 hour
     status: 'completed',
     totalAmount: 50,
-    createdAt: new Date('2025-11-01'),
-    updatedAt: new Date('2025-11-15'),
+    createdAt: new Date(Date.now() - 1382400000), // 16 days ago
+    updatedAt: new Date(Date.now() - 1296000000), // 15 days ago
   },
 ];
 
@@ -89,7 +77,7 @@ describe('TutorBookingOverview', () => {
 
   it('renders loading state initially', () => {
     vi.mocked(apiClient.get).mockImplementation(
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => {}), // Never resolves
     );
 
     render(<TutorBookingOverview tutorId="tutor1" />);
@@ -209,7 +197,9 @@ describe('TutorBookingOverview', () => {
       // There are 3 links: "View All" + 2 booking "View" buttons
       expect(viewButtons.length).toBeGreaterThanOrEqual(2);
       // Find the booking view buttons (not "View All")
-      const bookingViewButtons = viewButtons.filter(btn => btn.getAttribute('href')?.startsWith('/bookings/'));
+      const bookingViewButtons = viewButtons.filter((btn) =>
+        btn.getAttribute('href')?.startsWith('/bookings/'),
+      );
       expect(bookingViewButtons).toHaveLength(2);
       expect(bookingViewButtons[0]).toHaveAttribute('href', '/bookings/1');
       expect(bookingViewButtons[1]).toHaveAttribute('href', '/bookings/2');

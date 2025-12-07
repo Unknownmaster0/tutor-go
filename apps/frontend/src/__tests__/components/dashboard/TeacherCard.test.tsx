@@ -40,7 +40,7 @@ describe('TeacherCard', () => {
   it('renders profile picture when provided', () => {
     render(<TeacherCard teacher={mockTeacher} />);
 
-    const img = screen.getByAltText("John Doe's profile");
+    const img = screen.getByAltText("John Doe's profile picture");
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute('src', 'https://example.com/profile.jpg');
   });
@@ -200,7 +200,8 @@ describe('TeacherCard', () => {
       const teacherWithoutPicture = { ...mockTeacher, profilePicture: undefined };
       render(<TeacherCard teacher={teacherWithoutPicture} />);
 
-      const avatar = screen.getByText('J').closest('div');
-      expect(avatar?.parentElement).toHaveAttribute('aria-hidden', 'true');
+      const avatar = screen.getByText('J').closest('div')?.closest('div');
+      expect(avatar).toHaveAttribute('aria-hidden', 'true');
     });
   });
+});
