@@ -13,7 +13,7 @@ import { createAdminRoutes } from './routes/admin.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.ADMIN_SERVICE_PORT || 3007;
+const PORT = process.env.ADMIN_SERVICE_PORT || 8008;
 const logger = new Logger('AdminService');
 
 // Middleware

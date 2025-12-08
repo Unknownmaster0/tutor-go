@@ -43,7 +43,7 @@ describe('Socket Client', () => {
   describe('createSocketConnection', () => {
     it('should create a new socket connection with correct config', () => {
       const config = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -67,7 +67,7 @@ describe('Socket Client', () => {
       mockSocket.connected = true;
       vi.mocked(io).mockReturnValue(mockSocket as Socket);
 
-      const config = { url: 'http://localhost:3000' };
+      const config = { url: 'http://localhost:8007' };
 
       const socket1 = createSocketConnection(config);
       const socket2 = createSocketConnection(config);
@@ -77,7 +77,7 @@ describe('Socket Client', () => {
     });
 
     it('should use autoConnect true by default when not specified', () => {
-      const config = { url: 'http://localhost:3000' };
+      const config = { url: 'http://localhost:8007' };
 
       createSocketConnection(config);
 
@@ -97,7 +97,7 @@ describe('Socket Client', () => {
     });
 
     it('should return the socket instance after creation', () => {
-      const config = { url: 'http://localhost:3000' };
+      const config = { url: 'http://localhost:8007' };
       createSocketConnection(config);
 
       const socket = getSocket();
@@ -107,7 +107,7 @@ describe('Socket Client', () => {
 
   describe('disconnectSocket', () => {
     it('should disconnect and clear the socket', () => {
-      const config = { url: 'http://localhost:3000' };
+      const config = { url: 'http://localhost:8007' };
       createSocketConnection(config);
 
       disconnectSocket();
@@ -123,7 +123,7 @@ describe('Socket Client', () => {
 
   describe('connectSocket', () => {
     it('should connect socket with updated token', () => {
-      const config = { url: 'http://localhost:3000', autoConnect: false };
+      const config = { url: 'http://localhost:8007', autoConnect: false };
       createSocketConnection(config);
 
       vi.mocked(tokenStorage.getAccessToken).mockReturnValue('new-token');
@@ -136,7 +136,7 @@ describe('Socket Client', () => {
 
     it('should not connect if socket is already connected', () => {
       mockSocket.connected = true;
-      const config = { url: 'http://localhost:3000' };
+      const config = { url: 'http://localhost:8007' };
       createSocketConnection(config);
 
       connectSocket();

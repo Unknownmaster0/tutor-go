@@ -5,17 +5,14 @@
 
 export const getCorsConfig = () => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const gatewayUrl = process.env.GATEWAY_URL || 'http://localhost:8000';
   const allowedOrigins = [
     frontendUrl,
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
-    'http://localhost:3003',
-    'http://localhost:3004',
-    'http://localhost:3006',
-    'http://localhost:3007',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
+    'http://localhost:3000', // Frontend
+    'http://localhost:8000', // API Gateway (new port)
+    'http://127.0.0.1:3000', // Frontend (127.0.0.1 variant)
+    'http://127.0.0.1:8000', // API Gateway (127.0.0.1 variant)
+    gatewayUrl, // Dynamic gateway URL from env
   ];
 
   // Add production origins if available
@@ -26,7 +23,10 @@ export const getCorsConfig = () => {
   }
 
   return {
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
       // Allow requests with no origin (like mobile apps or Postman)
       if (!origin) {
         callback(null, true);
@@ -50,7 +50,7 @@ export const getCorsConfig = () => {
 
 export const getSocketIoCorsConfig = () => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  
+
   return {
     origin: frontendUrl,
     methods: ['GET', 'POST'],

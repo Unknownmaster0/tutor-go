@@ -13,7 +13,7 @@ import { createBookingRoutes } from './routes/booking.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.BOOKING_SERVICE_PORT || 3003;
+const PORT = process.env.BOOKING_SERVICE_PORT || 8003;
 const logger = new Logger('BookingService');
 
 // Middleware

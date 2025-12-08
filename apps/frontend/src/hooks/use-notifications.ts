@@ -3,7 +3,8 @@ import { useSocket } from './use-socket';
 import { apiClient } from '@/lib/api-client';
 import { Notification } from '@/types/notification.types';
 
-const NOTIFICATION_SERVICE_URL = process.env.NEXT_PUBLIC_NOTIFICATION_SERVICE_URL || 'http://localhost:3007';
+const NOTIFICATION_SERVICE_URL =
+  process.env.NEXT_PUBLIC_NOTIFICATION_SERVICE_URL || 'http://localhost:8007';
 
 export interface UseNotificationsReturn {
   notifications: Notification[];
@@ -46,9 +47,9 @@ export const useNotifications = (userId: string | null): UseNotificationsReturn 
       setIsLoading(true);
       setError(null);
       const response = await apiClient.get<{ notifications: Notification[]; unreadCount: number }>(
-        `/notifications/${userId}`
+        `/notifications/${userId}`,
       );
-      
+
       setNotifications(response.notifications);
       setUnreadCount(response.unreadCount);
     } catch (err: any) {
@@ -62,15 +63,13 @@ export const useNotifications = (userId: string | null): UseNotificationsReturn 
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
       await apiClient.patch(`/notifications/${notificationId}/read`, { read: true });
-      
+
       setNotifications((prev) =>
         prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
+          notification.id === notificationId ? { ...notification, read: true } : notification,
+        ),
       );
-      
+
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err: any) {
       console.error('Failed to mark notification as read:', err);
@@ -83,17 +82,15 @@ export const useNotifications = (userId: string | null): UseNotificationsReturn 
 
     try {
       const unreadNotifications = notifications.filter((n) => !n.read);
-      
+
       await Promise.all(
         unreadNotifications.map((notification) =>
-          apiClient.patch(`/notifications/${notification.id}/read`, { read: true })
-        )
+          apiClient.patch(`/notifications/${notification.id}/read`, { read: true }),
+        ),
       );
-      
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, read: true }))
-      );
-      
+
+      setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
+
       setUnreadCount(0);
     } catch (err: any) {
       console.error('Failed to mark all notifications as read:', err);
@@ -113,10 +110,8 @@ export const useNotifications = (userId: string | null): UseNotificationsReturn 
     const handleNotificationRead = (data: { notificationId: string }) => {
       setNotifications((prev) =>
         prev.map((notification) =>
-          notification.id === data.notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
+          notification.id === data.notificationId ? { ...notification, read: true } : notification,
+        ),
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     };

@@ -39,7 +39,7 @@ describe('useSocket', () => {
   describe('initialization', () => {
     it('should create socket connection on mount', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -53,7 +53,7 @@ describe('useSocket', () => {
 
     it('should register connection event handlers', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         onConnect: vi.fn(),
         onDisconnect: vi.fn(),
         onError: vi.fn(),
@@ -70,7 +70,7 @@ describe('useSocket', () => {
 
     it('should auto-connect if autoConnect is true', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: true,
       };
 
@@ -83,7 +83,7 @@ describe('useSocket', () => {
   describe('connection state', () => {
     it('should update isConnected when socket connects', async () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -102,7 +102,7 @@ describe('useSocket', () => {
 
     it('should update isConnected when socket disconnects', async () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -129,7 +129,7 @@ describe('useSocket', () => {
     it('should call onConnect callback when connected', async () => {
       const onConnect = vi.fn();
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         onConnect,
       };
 
@@ -146,7 +146,7 @@ describe('useSocket', () => {
     it('should call onDisconnect callback with reason', async () => {
       const onDisconnect = vi.fn();
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         onDisconnect,
       };
 
@@ -163,7 +163,7 @@ describe('useSocket', () => {
     it('should call onError callback when error occurs', async () => {
       const onError = vi.fn();
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         onError,
       };
 
@@ -181,7 +181,7 @@ describe('useSocket', () => {
     it('should call onReconnect callback with attempt number', async () => {
       const onReconnect = vi.fn();
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         onReconnect,
       };
 
@@ -199,7 +199,7 @@ describe('useSocket', () => {
   describe('methods', () => {
     it('should connect socket when connect is called', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -212,7 +212,7 @@ describe('useSocket', () => {
 
     it('should disconnect socket when disconnect is called', async () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -228,7 +228,7 @@ describe('useSocket', () => {
 
     it('should emit events through socket', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -241,7 +241,7 @@ describe('useSocket', () => {
 
     it('should register event listeners', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -255,7 +255,7 @@ describe('useSocket', () => {
 
     it('should remove event listeners', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -270,7 +270,7 @@ describe('useSocket', () => {
 
     it('should remove all listeners for event when no handler provided', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 
@@ -285,7 +285,7 @@ describe('useSocket', () => {
   describe('cleanup', () => {
     it('should disconnect and clean up on unmount', () => {
       const options = {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:8007',
         autoConnect: false,
       };
 

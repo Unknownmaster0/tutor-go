@@ -20,7 +20,7 @@ import { createAuthRoutes } from './routes/auth.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.AUTH_SERVICE_PORT || 3001;
+const PORT = process.env.AUTH_SERVICE_PORT || 8001;
 const logger = new Logger('AuthService');
 
 // Initialize services

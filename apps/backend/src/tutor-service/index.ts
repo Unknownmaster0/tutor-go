@@ -20,7 +20,7 @@ import { createTutorRoutes } from './routes/tutor.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.TUTOR_SERVICE_PORT || 3002;
+const PORT = process.env.TUTOR_SERVICE_PORT || 8002;
 const logger = new Logger('TutorService');
 
 // Initialize services

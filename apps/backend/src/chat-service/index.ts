@@ -20,7 +20,7 @@ import { SocketService } from './services/socket.service';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.CHAT_SERVICE_PORT || 3006;
+const PORT = process.env.CHAT_SERVICE_PORT || 8006;
 const logger = new Logger('ChatService');
 
 // Create HTTP server

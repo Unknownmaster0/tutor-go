@@ -14,7 +14,7 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const PORT = process.env.NOTIFICATION_SERVICE_PORT || 3007;
+const PORT = process.env.NOTIFICATION_SERVICE_PORT || 8007;
 const logger = new Logger('NotificationService');
 
 // Initialize Socket.io service
