@@ -12,6 +12,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true, // Enable cookies for cross-origin requests
     });
 
     // Request interceptor to add auth token
@@ -23,7 +24,7 @@ class ApiClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor to handle token refresh
@@ -39,7 +40,7 @@ class ApiClient {
           try {
             // Get refresh token from cookie storage
             const refreshToken = tokenStorage.getRefreshToken();
-            
+
             if (!refreshToken) {
               // No refresh token available, redirect to login
               tokenStorage.clearTokens();
@@ -55,8 +56,9 @@ class ApiClient {
             });
 
             // Extract new access token from response
-            const { data } = response.data;
-            const newAccessToken = data.accessToken;
+            // Backend returns: { success: true, message: "...", data: { accessToken, ... } }
+            const apiResponse = response.data;
+            const newAccessToken = apiResponse.data?.accessToken;
 
             if (!newAccessToken) {
               throw new Error('No access token in refresh response');
@@ -79,33 +81,51 @@ class ApiClient {
         }
 
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   async get<T>(url: string, config?: AxiosRequestConfig) {
-    const response = await this.client.get<T>(url, config);
-    return response.data;
+    const response = await this.client.get<{ success: boolean; message: string; data: T }>(
+      url,
+      config,
+    );
+    return response.data.data;
   }
 
   async post<T>(url: string, data?: any, config?: AxiosRequestConfig) {
-    const response = await this.client.post<T>(url, data, config);
-    return response.data;
+    const response = await this.client.post<{ success: boolean; message: string; data: T }>(
+      url,
+      data,
+      config,
+    );
+    return response.data.data;
   }
 
   async put<T>(url: string, data?: any, config?: AxiosRequestConfig) {
-    const response = await this.client.put<T>(url, data, config);
-    return response.data;
+    const response = await this.client.put<{ success: boolean; message: string; data: T }>(
+      url,
+      data,
+      config,
+    );
+    return response.data.data;
   }
 
   async patch<T>(url: string, data?: any, config?: AxiosRequestConfig) {
-    const response = await this.client.patch<T>(url, data, config);
-    return response.data;
+    const response = await this.client.patch<{ success: boolean; message: string; data: T }>(
+      url,
+      data,
+      config,
+    );
+    return response.data.data;
   }
 
   async delete<T>(url: string, config?: AxiosRequestConfig) {
-    const response = await this.client.delete<T>(url, config);
-    return response.data;
+    const response = await this.client.delete<{ success: boolean; message: string; data: T }>(
+      url,
+      config,
+    );
+    return response.data.data;
   }
 }
 

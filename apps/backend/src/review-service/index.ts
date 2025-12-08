@@ -10,6 +10,7 @@ import { ReviewController } from './controllers/review.controller';
 import { createReviewRoutes } from './routes/review.routes';
 import { RabbitMQConnection } from '../shared/rabbitmq/connection';
 import { RabbitMQPublisher } from '../shared/rabbitmq/publisher';
+import { getCorsConfig } from '../shared';
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ const PORT = process.env.REVIEW_SERVICE_PORT || 3006;
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());

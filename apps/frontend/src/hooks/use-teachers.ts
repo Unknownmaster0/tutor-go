@@ -21,7 +21,7 @@ interface TeacherSearchParams {
 
 /**
  * Custom hook for fetching the list of available teachers
- * 
+ *
  * @param params - Optional search parameters for filtering teachers
  * @returns Object containing teachers array, loading state, error state, and refetch function
  */
@@ -40,16 +40,20 @@ export function useTeachers(params?: TeacherSearchParams): UseTeachersResult {
       if (params?.subject) queryParams.append('subject', params.subject);
       if (params?.minRate !== undefined) queryParams.append('minRate', params.minRate.toString());
       if (params?.maxRate !== undefined) queryParams.append('maxRate', params.maxRate.toString());
-      if (params?.minRating !== undefined) queryParams.append('minRating', params.minRating.toString());
-      if (params?.latitude !== undefined) queryParams.append('latitude', params.latitude.toString());
-      if (params?.longitude !== undefined) queryParams.append('longitude', params.longitude.toString());
+      if (params?.minRating !== undefined)
+        queryParams.append('minRating', params.minRating.toString());
+      if (params?.latitude !== undefined)
+        queryParams.append('latitude', params.latitude.toString());
+      if (params?.longitude !== undefined)
+        queryParams.append('longitude', params.longitude.toString());
       if (params?.radius !== undefined) queryParams.append('radius', params.radius.toString());
 
       const queryString = queryParams.toString();
       const url = `/tutors/search${queryString ? `?${queryString}` : ''}`;
 
-      const response = await apiClient.get<{ tutors: Teacher[] }>(url);
-      setTeachers(response.tutors || []);
+      const response = await apiClient.get<Teacher[]>(url);
+      // Backend returns array directly after apiClient extracts the data field
+      setTeachers(Array.isArray(response) ? response : []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch teachers';
       setError(errorMessage);
@@ -57,7 +61,15 @@ export function useTeachers(params?: TeacherSearchParams): UseTeachersResult {
     } finally {
       setIsLoading(false);
     }
-  }, [params?.subject, params?.minRate, params?.maxRate, params?.minRating, params?.latitude, params?.longitude, params?.radius]);
+  }, [
+    params?.subject,
+    params?.minRate,
+    params?.maxRate,
+    params?.minRating,
+    params?.latitude,
+    params?.longitude,
+    params?.radius,
+  ]);
 
   useEffect(() => {
     fetchTeachers();

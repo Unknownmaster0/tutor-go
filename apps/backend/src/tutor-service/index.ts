@@ -4,7 +4,15 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
-import { errorHandler, notFoundHandler, Logger, ApiResponse, connectMongoDB, connectRedis } from '../shared';
+import {
+  errorHandler,
+  notFoundHandler,
+  Logger,
+  ApiResponse,
+  connectMongoDB,
+  connectRedis,
+  getCorsConfig,
+} from '../shared';
 import { TutorService, GeocodingService, RedisService, CloudinaryService } from './services';
 import { TutorController } from './controllers/tutor.controller';
 import { createTutorRoutes } from './routes/tutor.routes';
@@ -24,7 +32,7 @@ const tutorController = new TutorController(tutorService, redisService);
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());

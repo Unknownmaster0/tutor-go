@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
-import { errorHandler, notFoundHandler, Logger, ApiResponse } from '../shared';
+import { errorHandler, notFoundHandler, Logger, ApiResponse, getCorsConfig } from '../shared';
 import { NotificationService, RabbitMQConsumerService, SocketService } from './services';
 import { NotificationController } from './controllers/notification.controller';
 import { createNotificationRoutes } from './routes/notification.routes';
@@ -29,7 +29,7 @@ const notificationController = new NotificationController(notificationService);
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());

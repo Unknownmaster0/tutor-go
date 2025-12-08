@@ -6,6 +6,9 @@ export * from './middleware/asyncHandler';
 export * from './utils/logger';
 export * from './utils/response';
 
+// Config
+export { getCorsConfig, getSocketIoCorsConfig } from './config/cors.config';
+
 // Database
 export * from './database';
 

@@ -10,7 +10,7 @@ import { UserList } from '@/components/admin/user-list';
 import { UserDetailsModal } from '@/components/admin/user-details-modal';
 
 export default function UserManagement() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
@@ -31,9 +31,14 @@ export default function UserManagement() {
       try {
         setLoading(true);
         setError(null);
-        const data = await apiClient.get<User[]>('/admin/users');
-        setUsers(data);
-        setFilteredUsers(data);
+        const data = await apiClient.get<{
+          users: User[];
+          total: number;
+          page: number;
+          totalPages: number;
+        }>('/admin/users');
+        setUsers(Array.isArray(data.users) ? data.users : []);
+        setFilteredUsers(Array.isArray(data.users) ? data.users : []);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to load users');
       } finally {
@@ -53,9 +58,7 @@ export default function UserManagement() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
-        (u) =>
-          u.name.toLowerCase().includes(query) ||
-          u.email.toLowerCase().includes(query)
+        (u) => u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query),
       );
     }
 
@@ -89,11 +92,9 @@ export default function UserManagement() {
   const handleSuspend = async (userId: string, reason: string) => {
     try {
       await apiClient.patch(`/admin/users/${userId}/suspend`, { reason });
-      
+
       // Update local state
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, suspended: true } : u))
-      );
+      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, suspended: true } : u)));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to suspend user');
     }
@@ -152,9 +153,7 @@ export default function UserManagement() {
             ← Back to Dashboard
           </button>
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="mt-2 text-gray-600">
-            Manage user accounts and permissions
-          </p>
+          <p className="mt-2 text-gray-600">Manage user accounts and permissions</p>
         </div>
 
         <UserSearch onSearch={handleSearch} onFilterChange={handleFilterChange} />

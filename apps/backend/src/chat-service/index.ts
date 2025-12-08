@@ -6,7 +6,14 @@ import compression from 'compression';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { errorHandler, notFoundHandler, Logger, ApiResponse } from '../shared';
+import {
+  errorHandler,
+  notFoundHandler,
+  Logger,
+  ApiResponse,
+  getCorsConfig,
+  getSocketIoCorsConfig,
+} from '../shared';
 import { socketAuthMiddleware } from './middleware/socket-auth.middleware';
 import { SocketService } from './services/socket.service';
 
@@ -21,11 +28,7 @@ const httpServer = createServer(app);
 
 // Initialize Socket.IO with authentication
 const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
+  cors: getSocketIoCorsConfig(),
 });
 
 // Apply Socket.IO authentication middleware
@@ -36,13 +39,13 @@ const socketService = new SocketService(io);
 socketService.initialize();
 
 // Initialize Redis connection
-socketService.initializeRedis().catch(err => {
+socketService.initializeRedis().catch((err) => {
   logger.error('Failed to initialize Redis:', err);
 });
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());
@@ -59,11 +62,15 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/chat/health', (req, res) => {
-  ApiResponse.success(res, { 
-    service: 'Chat Service',
-    activeConnections: socketService.getConnectedUsersCount(),
-    connectedUsers: socketService.getConnectedUserIds(),
-  }, 'Service is healthy');
+  ApiResponse.success(
+    res,
+    {
+      service: 'Chat Service',
+      activeConnections: socketService.getConnectedUsersCount(),
+      connectedUsers: socketService.getConnectedUserIds(),
+    },
+    'Service is healthy',
+  );
 });
 
 // API Routes
@@ -73,7 +80,7 @@ app.use('/chat', chatRoutes);
 
 // Health check route
 app.get('/chat/status', (req, res) => {
-  ApiResponse.success(res, { 
+  ApiResponse.success(res, {
     message: 'Chat API is running',
     websocket: 'Socket.IO enabled with JWT authentication',
     activeConnections: socketService.getConnectedUsersCount(),

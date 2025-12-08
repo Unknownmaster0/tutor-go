@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
-import { errorHandler, notFoundHandler, Logger, ApiResponse } from '../shared';
+import { errorHandler, notFoundHandler, Logger, ApiResponse, getCorsConfig } from '../shared';
 import { prisma } from '../shared/database';
 import { PaymentService, RabbitMQService } from './services';
 import { PaymentController } from './controllers/payment.controller';
@@ -18,15 +18,13 @@ const logger = new Logger('PaymentService');
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 
 // Webhook endpoint needs raw body
-app.post(
-  '/payments/webhook',
-  express.raw({ type: 'application/json' }),
-  (req, res, next) => next()
+app.post('/payments/webhook', express.raw({ type: 'application/json' }), (req, res, next) =>
+  next(),
 );
 
 // Regular JSON parsing for other routes

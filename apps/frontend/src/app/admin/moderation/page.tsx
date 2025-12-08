@@ -9,7 +9,7 @@ import { ModerationFilters } from '@/components/admin/moderation-filters';
 import { FlaggedContentList } from '@/components/admin/flagged-content-list';
 
 export default function ContentModeration() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [content, setContent] = useState<FlaggedContent[]>([]);
   const [filteredContent, setFilteredContent] = useState<FlaggedContent[]>([]);
@@ -72,8 +72,8 @@ export default function ContentModeration() {
         prev.map((item) =>
           item.id === contentId
             ? { ...item, status: action.action === 'approve' ? 'approved' : 'removed' }
-            : item
-        )
+            : item,
+        ),
       );
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to moderate content');
@@ -122,9 +122,7 @@ export default function ContentModeration() {
             ← Back to Dashboard
           </button>
           <h1 className="text-3xl font-bold text-gray-900">Content Moderation</h1>
-          <p className="mt-2 text-gray-600">
-            Review and moderate flagged content
-          </p>
+          <p className="mt-2 text-gray-600">Review and moderate flagged content</p>
         </div>
 
         <ModerationFilters onFilterChange={handleFilterChange} />

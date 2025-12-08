@@ -17,11 +17,20 @@ export const createAuthRoutes = (authController: AuthController): Router => {
   router.post('/register', registerValidation, asyncHandler(authController.register));
   router.post('/login', loginValidation, asyncHandler(authController.login));
   router.post('/refresh', refreshTokenValidation, asyncHandler(authController.refreshToken));
-  router.post('/forgot-password', forgotPasswordValidation, asyncHandler(authController.forgotPassword));
-  router.post('/reset-password', resetPasswordValidation, asyncHandler(authController.resetPassword));
+  router.post(
+    '/forgot-password',
+    forgotPasswordValidation,
+    asyncHandler(authController.forgotPassword),
+  );
+  router.post(
+    '/reset-password',
+    resetPasswordValidation,
+    asyncHandler(authController.resetPassword),
+  );
 
   // Protected routes
   router.post('/logout', authenticateToken, asyncHandler(authController.logout));
+  router.get('/me', authenticateToken, asyncHandler(authController.me));
 
   return router;
 };

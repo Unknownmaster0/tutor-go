@@ -11,7 +11,7 @@ interface UseConversationsResult {
 
 /**
  * Custom hook for fetching user chat conversations
- * 
+ *
  * @param userId - The ID of the user whose conversations to fetch
  * @returns Object containing conversations array, loading state, error state, and refetch function
  */
@@ -32,8 +32,8 @@ export function useConversations(userId: string | null): UseConversationsResult 
       setError(null);
 
       const url = `/chat/conversations/${userId}`;
-      const response = await apiClient.get<{ conversations: Conversation[] }>(url);
-      setConversations(response.conversations || []);
+      const response = await apiClient.get<Conversation[]>(url);
+      setConversations(Array.isArray(response) ? response : []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch conversations';
       setError(errorMessage);

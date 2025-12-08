@@ -5,7 +5,14 @@ import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import { errorHandler, notFoundHandler, Logger, ApiResponse, connectRedis } from '../shared';
+import {
+  errorHandler,
+  notFoundHandler,
+  Logger,
+  ApiResponse,
+  connectRedis,
+  getCorsConfig,
+} from '../shared';
 import { AuthService, RedisService, EmailService } from './services';
 import { AuthController } from './controllers/auth.controller';
 import { createAuthRoutes } from './routes/auth.routes';
@@ -25,7 +32,7 @@ const authController = new AuthController(authService);
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());

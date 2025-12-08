@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
-import { errorHandler, notFoundHandler, Logger, ApiResponse } from '../shared';
+import { errorHandler, notFoundHandler, Logger, ApiResponse, getCorsConfig } from '../shared';
 import { prisma } from '../shared/database';
 import { AdminService } from './services/admin.service';
 import { AdminController } from './controllers/admin.controller';
@@ -18,7 +18,7 @@ const logger = new Logger('AdminService');
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(getCorsConfig()));
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.json());

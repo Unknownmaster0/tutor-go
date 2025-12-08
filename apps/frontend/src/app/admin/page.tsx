@@ -11,7 +11,7 @@ import { BookingsChart } from '@/components/admin/bookings-chart';
 import { ActivityFeed } from '@/components/admin/activity-feed';
 
 export default function AdminDashboard() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
@@ -32,34 +32,17 @@ export default function AdminDashboard() {
         setLoading(true);
         setError(null);
 
-        const [metricsData, activityData] = await Promise.all([
+        const [metricsData, activityData, revenueData, bookingData] = await Promise.all([
           apiClient.get<AdminMetrics>('/admin/metrics'),
           apiClient.get<RecentActivity[]>('/admin/activity'),
+          apiClient.get<RevenueData[]>('/admin/revenue'),
+          apiClient.get<BookingData[]>('/admin/bookings'),
         ]);
 
         setMetrics(metricsData);
-        setRecentActivity(activityData);
-
-        // Generate mock chart data (in real app, this would come from API)
-        const last7Days = Array.from({ length: 7 }, (_, i) => {
-          const date = new Date();
-          date.setDate(date.getDate() - (6 - i));
-          return date.toISOString().split('T')[0];
-        });
-
-        setRevenueData(
-          last7Days.map((date) => ({
-            date,
-            revenue: Math.random() * 1000 + 500,
-          }))
-        );
-
-        setBookingData(
-          last7Days.map((date) => ({
-            date,
-            bookings: Math.floor(Math.random() * 20 + 5),
-          }))
-        );
+        setRecentActivity(Array.isArray(activityData) ? activityData : []);
+        setRevenueData(Array.isArray(revenueData) ? revenueData : []);
+        setBookingData(Array.isArray(bookingData) ? bookingData : []);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to load dashboard data');
       } finally {

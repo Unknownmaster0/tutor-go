@@ -15,12 +15,15 @@ interface BookingsFilterParams {
 
 /**
  * Custom hook for fetching user bookings
- * 
+ *
  * @param userId - The ID of the user whose bookings to fetch
  * @param params - Optional filter parameters (e.g., status)
  * @returns Object containing bookings array, loading state, error state, and refetch function
  */
-export function useBookings(userId: string | null, params?: BookingsFilterParams): UseBookingsResult {
+export function useBookings(
+  userId: string | null,
+  params?: BookingsFilterParams,
+): UseBookingsResult {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +48,8 @@ export function useBookings(userId: string | null, params?: BookingsFilterParams
       const queryString = queryParams.toString();
       const url = `/bookings/user/${userId}${queryString ? `?${queryString}` : ''}`;
 
-      const response = await apiClient.get<{ bookings: Booking[] }>(url);
-      setBookings(response.bookings || []);
+      const response = await apiClient.get<Booking[]>(url);
+      setBookings(Array.isArray(response) ? response : []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch bookings';
       setError(errorMessage);

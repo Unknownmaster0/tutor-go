@@ -182,7 +182,7 @@ export class AuthService {
         role: user.role,
       },
       this.JWT_SECRET,
-      { expiresIn: this.JWT_EXPIRES_IN }
+      { expiresIn: this.JWT_EXPIRES_IN },
     );
   }
 
@@ -194,16 +194,14 @@ export class AuthService {
         role: user.role,
       },
       this.JWT_REFRESH_SECRET,
-      { expiresIn: this.JWT_REFRESH_EXPIRES_IN }
+      { expiresIn: this.JWT_REFRESH_EXPIRES_IN },
     );
   }
 
   private generateResetToken(): string {
-    return jwt.sign(
-      { purpose: 'password-reset', timestamp: Date.now() },
-      this.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    return jwt.sign({ purpose: 'password-reset', timestamp: Date.now() }, this.JWT_SECRET, {
+      expiresIn: '1h',
+    });
   }
 
   async verifyToken(token: string): Promise<{ userId: string; email: string; role: string }> {
@@ -213,5 +211,27 @@ export class AuthService {
       role: string;
     };
     return decoded;
+  }
+
+  async getUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        phone: true,
+        emailVerified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return user;
   }
 }

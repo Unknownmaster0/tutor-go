@@ -2,7 +2,13 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { AuthService } from '../services';
 import { ApiResponse, asyncHandler } from '../../shared';
-import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, RefreshTokenDto } from '../dto';
+import {
+  RegisterDto,
+  LoginDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  RefreshTokenDto,
+} from '../dto';
 
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -123,6 +129,26 @@ export class AuthController {
       ApiResponse.success(res, null, 'Logged out successfully');
     } catch (error: any) {
       ApiResponse.error(res, 'Logout failed', 500);
+    }
+  };
+
+  me = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).user?.userId;
+
+      if (!userId) {
+        ApiResponse.error(res, 'Unauthorized', 401);
+        return;
+      }
+
+      const user = await this.authService.getUserById(userId);
+      ApiResponse.success(res, user, 'User retrieved successfully');
+    } catch (error: any) {
+      if (error.message === 'User not found') {
+        ApiResponse.error(res, 'User not found', 404);
+      } else {
+        ApiResponse.error(res, 'Failed to retrieve user', 500);
+      }
     }
   };
 }

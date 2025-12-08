@@ -26,7 +26,70 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to get admin metrics',
-        500
+        500,
+      );
+    }
+  };
+
+  /**
+   * GET /admin/activity
+   * Get recent activity
+   */
+  getActivity = async (req: Request, res: Response): Promise<void> => {
+    try {
+      this.logger.log('Getting recent activity');
+
+      const activity = await this.adminService.getActivity();
+
+      ApiResponse.success(res, activity, 'Activity retrieved successfully');
+    } catch (error) {
+      this.logger.error('Error getting activity:', error);
+      ApiResponse.error(
+        res,
+        error instanceof Error ? error.message : 'Failed to get activity',
+        500,
+      );
+    }
+  };
+
+  /**
+   * GET /admin/revenue
+   * Get revenue data
+   */
+  getRevenueData = async (req: Request, res: Response): Promise<void> => {
+    try {
+      this.logger.log('Getting revenue data');
+
+      const revenueData = await this.adminService.getRevenueData();
+
+      ApiResponse.success(res, revenueData, 'Revenue data retrieved successfully');
+    } catch (error) {
+      this.logger.error('Error getting revenue data:', error);
+      ApiResponse.error(
+        res,
+        error instanceof Error ? error.message : 'Failed to get revenue data',
+        500,
+      );
+    }
+  };
+
+  /**
+   * GET /admin/bookings
+   * Get bookings data
+   */
+  getBookingsData = async (req: Request, res: Response): Promise<void> => {
+    try {
+      this.logger.log('Getting bookings data');
+
+      const bookingsData = await this.adminService.getBookingsData();
+
+      ApiResponse.success(res, bookingsData, 'Bookings data retrieved successfully');
+    } catch (error) {
+      this.logger.error('Error getting bookings data:', error);
+      ApiResponse.error(
+        res,
+        error instanceof Error ? error.message : 'Failed to get bookings data',
+        500,
       );
     }
   };
@@ -57,7 +120,7 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to search users',
-        500
+        500,
       );
     }
   };
@@ -87,7 +150,7 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to suspend user',
-        statusCode
+        statusCode,
       );
     }
   };
@@ -111,7 +174,7 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to unsuspend user',
-        statusCode
+        statusCode,
       );
     }
   };
@@ -132,7 +195,7 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to get flagged content',
-        500
+        500,
       );
     }
   };
@@ -170,7 +233,7 @@ export class AdminController {
         id,
         type as 'review' | 'message',
         { action, reason },
-        moderatorId
+        moderatorId,
       );
 
       ApiResponse.success(res, null, 'Content moderated successfully');
@@ -179,7 +242,7 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to moderate content',
-        500
+        500,
       );
     }
   };
@@ -211,7 +274,7 @@ export class AdminController {
       ApiResponse.error(
         res,
         error instanceof Error ? error.message : 'Failed to get transactions',
-        500
+        500,
       );
     }
   };

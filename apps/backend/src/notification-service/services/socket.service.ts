@@ -1,6 +1,7 @@
 import { Server as HTTPServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import { getSocketIoCorsConfig } from '../../shared';
 
 /**
  * Socket.io Service for real-time notifications
@@ -11,10 +12,7 @@ export class SocketService {
 
   constructor(httpServer: HTTPServer) {
     this.io = new Server(httpServer, {
-      cors: {
-        origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-        credentials: true,
-      },
+      cors: getSocketIoCorsConfig(),
     });
 
     this.userSockets = new Map();

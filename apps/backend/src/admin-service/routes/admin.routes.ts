@@ -20,6 +20,15 @@ export const createAdminRoutes = (adminController: AdminController): Router => {
   // GET /admin/metrics - Get dashboard metrics
   router.get('/metrics', adminController.getMetrics);
 
+  // GET /admin/activity - Get recent activity
+  router.get('/activity', adminController.getActivity);
+
+  // GET /admin/revenue - Get revenue data
+  router.get('/revenue', adminController.getRevenueData);
+
+  // GET /admin/bookings - Get bookings data
+  router.get('/bookings', adminController.getBookingsData);
+
   // GET /admin/users - Search and filter users
   router.get('/users', validate(searchUsersSchema), adminController.searchUsers);
 
@@ -36,7 +45,7 @@ export const createAdminRoutes = (adminController: AdminController): Router => {
   router.post(
     '/flagged-content/:id/moderate',
     validate(moderateContentSchema),
-    adminController.moderateContent
+    adminController.moderateContent,
   );
 
   // GET /admin/transactions - Get transaction history

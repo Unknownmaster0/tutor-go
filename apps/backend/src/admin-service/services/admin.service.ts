@@ -55,29 +55,27 @@ export class AdminService {
       const totalRevenue = Number(revenueResult._sum.amount || 0);
 
       // Calculate average booking value
-      const averageBookingValue =
-        totalBookings > 0 ? totalRevenue / totalBookings : 0;
+      const averageBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
       // Get today's activity
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const [newUsersToday, bookingsToday, revenueTodayResult] =
-        await Promise.all([
-          this.prisma.user.count({
-            where: { createdAt: { gte: today } },
-          }),
-          this.prisma.booking.count({
-            where: { createdAt: { gte: today } },
-          }),
-          this.prisma.payment.aggregate({
-            where: {
-              status: 'succeeded',
-              createdAt: { gte: today },
-            },
-            _sum: { amount: true },
-          }),
-        ]);
+      const [newUsersToday, bookingsToday, revenueTodayResult] = await Promise.all([
+        this.prisma.user.count({
+          where: { createdAt: { gte: today } },
+        }),
+        this.prisma.booking.count({
+          where: { createdAt: { gte: today } },
+        }),
+        this.prisma.payment.aggregate({
+          where: {
+            status: 'succeeded',
+            createdAt: { gte: today },
+          },
+          _sum: { amount: true },
+        }),
+      ]);
 
       const revenueToday = Number(revenueTodayResult._sum.amount || 0);
 
@@ -111,16 +109,10 @@ export class AdminService {
    * Search and filter users
    */
   async searchUsers(
-    filters: UserSearchDto
+    filters: UserSearchDto,
   ): Promise<{ users: UserManagementDto[]; total: number; page: number; totalPages: number }> {
     try {
-      const {
-        search,
-        role,
-        status,
-        page = 1,
-        limit = 20,
-      } = filters;
+      const { search, role, status, page = 1, limit = 20 } = filters;
 
       this.logger.log('Searching users with filters:', filters);
 
@@ -345,7 +337,7 @@ export class AdminService {
     contentId: string,
     type: 'review' | 'message',
     action: ModerationActionDto,
-    moderatorId: string
+    moderatorId: string,
   ): Promise<void> {
     try {
       this.logger.log(`Moderating ${type} ${contentId} with action ${action.action}`);
@@ -401,17 +393,10 @@ export class AdminService {
    * Get transaction history with filters
    */
   async getTransactions(
-    filters: TransactionFilterDto
+    filters: TransactionFilterDto,
   ): Promise<{ transactions: TransactionDto[]; total: number; page: number; totalPages: number }> {
     try {
-      const {
-        startDate,
-        endDate,
-        status,
-        userId,
-        page = 1,
-        limit = 20,
-      } = filters;
+      const { startDate, endDate, status, userId, page = 1, limit = 20 } = filters;
 
       this.logger.log('Fetching transactions with filters:', filters);
 
@@ -485,6 +470,128 @@ export class AdminService {
     } catch (error) {
       this.logger.error('Error fetching transactions:', error);
       throw new Error('Failed to fetch transactions');
+    }
+  }
+
+  /**
+   * Get recent activity
+   */
+  async getActivity(): Promise<
+    Array<{ id: string; type: string; description: string; timestamp: Date }>
+  > {
+    try {
+      this.logger.log('Fetching recent activity');
+
+      // Get recent bookings
+      const recentBookings = await this.prisma.booking.findMany({
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          student: { select: { name: true } },
+          tutor: { select: { name: true } },
+        },
+      });
+
+      // Transform to activity format
+      const activity = recentBookings.map((booking) => ({
+        id: booking.id,
+        type: 'booking',
+        description: `Booking created: ${booking.student.name} booked ${booking.tutor.name}`,
+        timestamp: booking.createdAt,
+      }));
+
+      return activity;
+    } catch (error) {
+      this.logger.error('Error fetching activity:', error);
+      throw new Error('Failed to fetch activity');
+    }
+  }
+
+  /**
+   * Get revenue data
+   */
+  async getRevenueData(): Promise<Array<{ date: string; revenue: number }>> {
+    try {
+      this.logger.log('Fetching revenue data');
+
+      // Get last 7 days of revenue
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - i));
+        date.setHours(0, 0, 0, 0);
+        return date;
+      });
+
+      const revenueData = await Promise.all(
+        last7Days.map(async (date) => {
+          const nextDate = new Date(date);
+          nextDate.setDate(nextDate.getDate() + 1);
+
+          const result = await this.prisma.payment.aggregate({
+            where: {
+              status: 'succeeded',
+              createdAt: {
+                gte: date,
+                lt: nextDate,
+              },
+            },
+            _sum: { amount: true },
+          });
+
+          return {
+            date: date.toISOString().split('T')[0],
+            revenue: Number(result._sum.amount || 0),
+          };
+        }),
+      );
+
+      return revenueData;
+    } catch (error) {
+      this.logger.error('Error fetching revenue data:', error);
+      throw new Error('Failed to fetch revenue data');
+    }
+  }
+
+  /**
+   * Get bookings data
+   */
+  async getBookingsData(): Promise<Array<{ date: string; bookings: number }>> {
+    try {
+      this.logger.log('Fetching bookings data');
+
+      // Get last 7 days of bookings
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - i));
+        date.setHours(0, 0, 0, 0);
+        return date;
+      });
+
+      const bookingsData = await Promise.all(
+        last7Days.map(async (date) => {
+          const nextDate = new Date(date);
+          nextDate.setDate(nextDate.getDate() + 1);
+
+          const count = await this.prisma.booking.count({
+            where: {
+              createdAt: {
+                gte: date,
+                lt: nextDate,
+              },
+            },
+          });
+
+          return {
+            date: date.toISOString().split('T')[0],
+            bookings: count,
+          };
+        }),
+      );
+
+      return bookingsData;
+    } catch (error) {
+      this.logger.error('Error fetching bookings data:', error);
+      throw new Error('Failed to fetch bookings data');
     }
   }
 }

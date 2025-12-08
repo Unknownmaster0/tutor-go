@@ -7,11 +7,13 @@ import {
   connectSocket,
   resetSocket,
 } from '@/lib/socket-client';
-import { getAccessToken } from '@/lib/token-storage';
+import { tokenStorage } from '@/lib/token-storage';
 
 vi.mock('socket.io-client');
 vi.mock('@/lib/token-storage', () => ({
-  getAccessToken: vi.fn(),
+  tokenStorage: {
+    getAccessToken: vi.fn(),
+  },
 }));
 
 describe('Socket Client', () => {
@@ -29,7 +31,7 @@ describe('Socket Client', () => {
     };
 
     vi.mocked(io).mockReturnValue(mockSocket as Socket);
-    vi.mocked(getAccessToken).mockReturnValue('test-token');
+    vi.mocked(tokenStorage.getAccessToken).mockReturnValue('test-token');
     resetSocket();
   });
 
@@ -66,7 +68,7 @@ describe('Socket Client', () => {
       vi.mocked(io).mockReturnValue(mockSocket as Socket);
 
       const config = { url: 'http://localhost:3000' };
-      
+
       const socket1 = createSocketConnection(config);
       const socket2 = createSocketConnection(config);
 
@@ -83,7 +85,7 @@ describe('Socket Client', () => {
         config.url,
         expect.objectContaining({
           autoConnect: false,
-        })
+        }),
       );
     });
   });
@@ -124,7 +126,7 @@ describe('Socket Client', () => {
       const config = { url: 'http://localhost:3000', autoConnect: false };
       createSocketConnection(config);
 
-      vi.mocked(getAccessToken).mockReturnValue('new-token');
+      vi.mocked(tokenStorage.getAccessToken).mockReturnValue('new-token');
 
       connectSocket();
 

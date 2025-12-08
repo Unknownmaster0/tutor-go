@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { getAccessToken } from './token-storage';
+import { tokenStorage } from './token-storage';
 
 let socket: Socket | null = null;
 
@@ -20,8 +20,8 @@ export const createSocketConnection = (config: SocketConfig): Socket => {
     socket = null;
   }
 
-  const token = getAccessToken();
-  
+  const token = tokenStorage.getAccessToken();
+
   socket = io(config.url, {
     autoConnect: config.autoConnect ?? false,
     auth: {
@@ -50,7 +50,7 @@ export const disconnectSocket = (): void => {
 
 export const connectSocket = (): void => {
   if (socket && !socket.connected) {
-    const token = getAccessToken();
+    const token = tokenStorage.getAccessToken();
     socket.auth = { token };
     socket.connect();
   }
