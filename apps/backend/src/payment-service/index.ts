@@ -13,7 +13,7 @@ import { createPaymentRoutes } from './routes/payment.routes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PAYMENT_SERVICE_PORT || 3004;
+const PORT = process.env.PAYMENT_SERVICE_PORT || 8004;
 const logger = new Logger('PaymentService');
 
 // Middleware

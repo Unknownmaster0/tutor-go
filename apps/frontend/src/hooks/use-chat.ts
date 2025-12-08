@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSocket } from './use-socket';
 import { Message, Conversation, ReceiveMessageEvent, UserStatus } from '@/types/chat.types';
-import axios from 'axios';
+import { apiClient } from '@/lib/api-client';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3005';
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:8007';
 
 export interface UseChatOptions {
   userId: string;
@@ -54,10 +53,8 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/chat/conversations/${options.userId}`
-      );
-      setConversations(response.data);
+      const response = await apiClient.get<Conversation[]>(`/chat/conversations/${options.userId}`);
+      setConversations(Array.isArray(response) ? response : []);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load conversations');
     } finally {
@@ -70,10 +67,8 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/chat/messages/${conversationId}`
-      );
-      setMessages(response.data);
+      const response = await apiClient.get<Message[]>(`/chat/messages/${conversationId}`);
+      setMessages(Array.isArray(response) ? response : []);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load messages');
     } finally {
@@ -112,7 +107,7 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
 
       setMessages((prev) => [...prev, optimisticMessage]);
     },
-    [socket, isConnected, options.userId, emit]
+    [socket, isConnected, options.userId, emit],
   );
 
   // Mark message as read
@@ -120,7 +115,7 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
     try {
       await axios.patch(`${API_BASE_URL}/chat/messages/${messageId}/read`);
       setMessages((prev) =>
-        prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg))
+        prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg)),
       );
     } catch (err: any) {
       console.error('Failed to mark message as read:', err);
@@ -128,10 +123,7 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
   }, []);
 
   // Calculate total unread count
-  const unreadCount = conversations.reduce(
-    (total, conv) => total + conv.unreadCount,
-    0
-  );
+  const unreadCount = conversations.reduce((total, conv) => total + conv.unreadCount, 0);
 
   // Handle incoming messages
   useEffect(() => {
@@ -164,8 +156,8 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
                 lastMessageTime: new Date(data.timestamp),
                 unreadCount: conv.unreadCount + 1,
               }
-            : conv
-        )
+            : conv,
+        ),
       );
     };
 
@@ -179,9 +171,7 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
 
     const handleMessageRead = (data: { messageId: string }) => {
       setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === data.messageId ? { ...msg, read: true } : msg
-        )
+        prev.map((msg) => (msg.id === data.messageId ? { ...msg, read: true } : msg)),
       );
     };
 

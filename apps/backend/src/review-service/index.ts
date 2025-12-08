@@ -15,7 +15,7 @@ import { getCorsConfig } from '../shared';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.REVIEW_SERVICE_PORT || 3006;
+const PORT = process.env.REVIEW_SERVICE_PORT || 8005;
 
 // Middleware
 app.use(helmet());

@@ -36,6 +36,7 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response): Promise<void> => {
+    console.log('Login request received');
     try {
       // Validate request
       const errors = validationResult(req);

@@ -45,7 +45,7 @@ describe('ApiClient', () => {
   const mockAccessToken = 'mock-access-token';
   const mockRefreshToken = 'mock-refresh-token';
   const mockNewAccessToken = 'mock-new-access-token';
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,9 +54,9 @@ describe('ApiClient', () => {
   describe('Token Storage Integration', () => {
     it('should retrieve refresh token from cookie storage', () => {
       mockTokenStorage.getRefreshToken.mockReturnValue(mockRefreshToken);
-      
+
       const token = mockTokenStorage.getRefreshToken();
-      
+
       expect(token).toBe(mockRefreshToken);
       expect(mockTokenStorage.getRefreshToken).toHaveBeenCalled();
     });
@@ -82,28 +82,28 @@ describe('ApiClient', () => {
       });
 
       const refreshToken = mockTokenStorage.getRefreshToken();
-      
+
       expect(refreshToken).toBe(mockRefreshToken);
       expect(mockTokenStorage.getRefreshToken).toHaveBeenCalled();
     });
 
     it('should store new access token after successful refresh', () => {
       mockTokenStorage.setAccessToken(mockNewAccessToken);
-      
+
       expect(mockTokenStorage.setAccessToken).toHaveBeenCalledWith(mockNewAccessToken);
     });
 
     it('should clear all tokens when refresh fails', () => {
       mockTokenStorage.clearTokens();
-      
+
       expect(mockTokenStorage.clearTokens).toHaveBeenCalled();
     });
 
     it('should handle missing refresh token gracefully', () => {
       mockTokenStorage.getRefreshToken.mockReturnValue(null);
-      
+
       const refreshToken = mockTokenStorage.getRefreshToken();
-      
+
       expect(refreshToken).toBeNull();
     });
   });
