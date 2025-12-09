@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { User } from '@/types/admin.types';
@@ -10,7 +10,7 @@ import { UserList } from '@/components/admin/user-list';
 import { UserDetailsModal } from '@/components/admin/user-details-modal';
 
 export default function UserManagement() {
-  const { user, isLoading: authLoading } = useAuthContext();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);

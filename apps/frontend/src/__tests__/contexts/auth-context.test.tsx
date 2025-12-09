@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { AuthProvider, useAuthContext } from '../../contexts/AuthContext';
+import { AuthProvider, useAuth } from '../../contexts/auth-context';
 import { apiClient } from '../../lib/api-client';
 import { tokenStorage } from '../../lib/token-storage';
 import { User, AuthResponse, LoginDto, RegisterDto } from '../../types/auth.types';
@@ -123,7 +123,7 @@ describe('AuthContext', () => {
       expect(apiClient.post).toHaveBeenCalledWith('/auth/login', credentials);
       expect(tokenStorage.setTokens).toHaveBeenCalledWith(
         mockAuthResponse.accessToken,
-        mockAuthResponse.refreshToken,
+        mockAuthResponse.refreshToken
       );
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
@@ -150,7 +150,7 @@ describe('AuthContext', () => {
       await expect(
         act(async () => {
           await result.current.login(credentials);
-        }),
+        })
       ).rejects.toThrow('Invalid credentials');
 
       expect(result.current.user).toBeNull();
@@ -159,7 +159,7 @@ describe('AuthContext', () => {
 
     it('should ensure tokens are stored before setting user state', async () => {
       const callOrder: string[] = [];
-
+      
       vi.mocked(apiClient.post).mockResolvedValue(mockAuthResponse);
       vi.mocked(tokenStorage.setTokens).mockImplementation(() => {
         callOrder.push('setTokens');
@@ -212,7 +212,7 @@ describe('AuthContext', () => {
       expect(apiClient.post).toHaveBeenCalledWith('/auth/register', registerData);
       expect(tokenStorage.setTokens).toHaveBeenCalledWith(
         mockAuthResponse.accessToken,
-        mockAuthResponse.refreshToken,
+        mockAuthResponse.refreshToken
       );
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.isAuthenticated).toBe(true);
@@ -241,7 +241,7 @@ describe('AuthContext', () => {
       await expect(
         act(async () => {
           await result.current.register(registerData);
-        }),
+        })
       ).rejects.toThrow('Email already exists');
 
       expect(result.current.user).toBeNull();
@@ -250,7 +250,7 @@ describe('AuthContext', () => {
 
     it('should ensure tokens are stored before setting user state', async () => {
       const callOrder: string[] = [];
-
+      
       vi.mocked(apiClient.post).mockResolvedValue(mockAuthResponse);
       vi.mocked(tokenStorage.setTokens).mockImplementation(() => {
         callOrder.push('setTokens');
@@ -337,7 +337,7 @@ describe('AuthContext', () => {
       await expect(
         act(async () => {
           await result.current.refreshUser();
-        }),
+        })
       ).rejects.toThrow('Unauthorized');
     });
   });
@@ -385,7 +385,7 @@ describe('AuthContext', () => {
       await expect(
         act(async () => {
           await result.current.updateProfile({ name: '' });
-        }),
+        })
       ).rejects.toThrow('Validation failed');
     });
   });

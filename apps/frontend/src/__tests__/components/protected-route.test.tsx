@@ -25,7 +25,7 @@ vi.mock('next/navigation', () => ({
   usePathname: () => mockUsePathname(),
 }));
 
-vi.mock('@/contexts/AuthContext', () => ({
+vi.mock('@/contexts/auth-context', () => ({
   useAuth: () => mockAuthValue,
 }));
 

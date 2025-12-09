@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { StudentRegistrationForm } from '@/components/auth/StudentRegistrationForm';
-import { TutorRegistrationForm } from '@/components/auth/TutorRegistrationForm';
+import { useAuth } from '@/contexts/auth-context';
+import { UserRole } from '@/types/auth.types';
 
 // Icons for the UI (Inline SVGs to avoid dependencies)
 const EyeIcon = () => (

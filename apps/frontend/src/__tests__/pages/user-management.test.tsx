@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import UserManagement from '@/app/admin/users/page';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth-context';
 import { apiClient } from '@/lib/api-client';
 import { vi } from 'vitest';
 
@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
 }));
 
-vi.mock('@/contexts/AuthContext', () => ({
+vi.mock('@/contexts/auth-context', () => ({
   useAuth: vi.fn(),
 }));
 
@@ -83,7 +83,7 @@ describe('UserManagement', () => {
     });
 
     (apiClient.get as any).mockImplementation(
-      () => new Promise(() => {}), // Never resolves
+      () => new Promise(() => {}) // Never resolves
     );
 
     render(<UserManagement />);
@@ -189,7 +189,7 @@ describe('UserManagement', () => {
     });
 
     fireEvent.click(screen.getByTestId('suspend-button-1'));
-
+    
     const reasonInput = screen.getByTestId('suspend-reason-input');
     fireEvent.change(reasonInput, { target: { value: 'Violation' } });
 

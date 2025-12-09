@@ -2,20 +2,17 @@
 
 import { useEffect, useRef } from 'react';
 import { Message } from '@/types/chat.types';
-import { ReadReceipt } from './read-receipt';
 
 interface MessageThreadProps {
   messages: Message[];
   currentUserId: string;
   isLoading?: boolean;
-  typingUser?: string;
 }
 
 export const MessageThread = ({
   messages,
   currentUserId,
   isLoading = false,
-  typingUser,
 }: MessageThreadProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -99,17 +96,21 @@ export const MessageThread = ({
               >
                 <div
                   className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                    isOwnMessage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-900'
+                    isOwnMessage
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-900'
                   }`}
                 >
                   <p className="text-sm break-words">{message.message}</p>
                   <div
-                    className={`text-xs mt-1 flex items-center gap-1 ${
+                    className={`text-xs mt-1 ${
                       isOwnMessage ? 'text-blue-100' : 'text-gray-500'
                     }`}
                   >
-                    <span>{formatTime(message.timestamp)}</span>
-                    {isOwnMessage && <ReadReceipt isRead={message.read} />}
+                    {formatTime(message.timestamp)}
+                    {isOwnMessage && message.read && (
+                      <span className="ml-1">✓✓</span>
+                    )}
                   </div>
                 </div>
               </div>
