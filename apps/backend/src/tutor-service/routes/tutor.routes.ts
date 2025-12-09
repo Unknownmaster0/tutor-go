@@ -16,8 +16,7 @@ export const createTutorRoutes = (tutorController: TutorController): Router => {
 
   // Public routes
   router.get('/search', searchTutorsValidation, asyncHandler(tutorController.searchTutors));
-  router.get('/:id', asyncHandler(tutorController.getProfileById));
-  router.get('/:id/availability', asyncHandler(tutorController.getAvailability));
+  
 
   // Protected routes - require authentication
   router.post('/profile', authenticateToken, createTutorProfileValidation, asyncHandler(tutorController.createProfile));
@@ -42,6 +41,7 @@ export const createTutorRoutes = (tutorController: TutorController): Router => {
     asyncHandler(tutorController.addAvailabilitySlot)
   );
   router.delete('/availability/slot', authenticateToken, asyncHandler(tutorController.removeAvailabilitySlot));
-
+  router.get('/:id', asyncHandler(tutorController.getProfileById));
+  router.get('/:id/availability', asyncHandler(tutorController.getAvailability));
   return router;
 };
