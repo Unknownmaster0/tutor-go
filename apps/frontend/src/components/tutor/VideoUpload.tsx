@@ -80,7 +80,7 @@ export const VideoUploadComponent: React.FC<VideoUploadProps> = ({
         toast.error('Upload failed');
       });
 
-      xhr.open('POST', '/api/tutor/upload-video');
+      xhr.open('POST', '/tutors/upload-video');
       xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('accessToken')}`);
       xhr.send(formData);
     } catch (err) {

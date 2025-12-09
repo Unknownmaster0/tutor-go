@@ -133,7 +133,7 @@ export const TutorProfileForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/tutor/profile', {
+      const response = await fetch('/tutors/profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -49,7 +49,7 @@ export const TutorSearchResults: React.FC<TutorSearchResultsProps> = ({
     const fetchTutors = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.get<Tutor[]>('/api/tutor/search', {
+        const response = await apiClient.get<Tutor[]>('/tutors/search', {
           params: {
             latitude,
             longitude,

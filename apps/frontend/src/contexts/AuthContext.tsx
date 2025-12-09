@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const token = tokenStorage.getAccessToken();
         if (token) {
           // Verify token by fetching current user
-          const response = await apiClient.get<User>('/api/auth/me');
+          const response = await apiClient.get<User>('/auth/me');
           setUser(response);
         }
       } catch (err) {
@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await apiClient.post('/api/auth/logout');
+      await apiClient.post('/auth/logout');
     } catch (err) {
       // Continue with logout even if request fails
       console.error('Logout request failed:', err);
@@ -128,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setError(null);
     try {
-      await apiClient.post('/api/auth/forgot-password', { email });
+      await apiClient.post('/auth/forgot-password', { email });
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Failed to send password reset email';
       setError(errorMessage);
@@ -142,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setError(null);
     try {
-      await apiClient.post('/api/auth/reset-password', { token, newPassword });
+      await apiClient.post('/auth/reset-password', { token, newPassword });
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Failed to reset password';
       setError(errorMessage);
@@ -157,7 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const refresh = tokenStorage.getRefreshToken();
       if (!refresh) throw new Error('No refresh token available');
 
-      const response = await apiClient.post<LoginResponse>('/api/auth/refresh', {
+      const response = await apiClient.post<LoginResponse>('/auth/refresh', {
         refreshToken: refresh,
       });
 

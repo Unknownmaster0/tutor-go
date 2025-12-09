@@ -89,7 +89,7 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({
         notes: sessionNotes || undefined,
       };
 
-      const response = await apiClient.post<{ bookingId: string }>('/api/booking/create', payload);
+      const response = await apiClient.post<{ bookingId: string }>('/bookings', payload);
 
       if (response) {
         const bookingId = response?.bookingId;

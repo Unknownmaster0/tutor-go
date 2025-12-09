@@ -33,7 +33,7 @@ export const AvailabilitySlots: React.FC<AvailabilitySlotsProps> = ({
     const fetchAvailabilitySlots = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.get<TimeSlot[]>(`/api/tutor/${tutorId}/availability`);
+        const response = await apiClient.get<TimeSlot[]>(`/tutors/${tutorId}/availability`);
         const availableSlots = response || [];
 
         // Sort slots by date and time

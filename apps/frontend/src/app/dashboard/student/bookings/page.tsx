@@ -5,6 +5,7 @@ import { Calendar, Clock, User, MapPin, MoreVertical, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { apiClient } from '@/lib/api-client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface Booking {
   id: string;
@@ -20,6 +21,7 @@ interface Booking {
 }
 
 export default function BookingsPage() {
+  const { user } = useAuthContext();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<
@@ -33,7 +35,7 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.get<Booking[]>('/api/booking/my-bookings');
+        const response = await apiClient.get<Booking[]>(`/bookings/user/${user?.id}`);
 
         if (response) {
           const bookingList = response || [];
@@ -79,7 +81,7 @@ export default function BookingsPage() {
   const handleCancelBooking = async (bookingId: string) => {
     try {
       setCancellingId(bookingId);
-      const response = await apiClient.post(`/api/booking/${bookingId}/cancel`);
+      const response = await apiClient.patch(`/bookings/${bookingId}/cancel`, {});
 
       if (response) {
         setBookings(

@@ -39,7 +39,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
     const fetchReviews = async () => {
       try {
         setIsLoading(true);
-        const response = await apiClient.get<Review[]>(`/api/review/tutor/${tutorId}`);
+        const response = await apiClient.get<Review[]>(`/reviews/tutor/${tutorId}`);
 
         if (response) {
           const reviewList = response || [];
@@ -89,7 +89,7 @@ export const ReviewsList: React.FC<ReviewsListProps> = ({
     // Fetch reviews again to update the list
     const fetchUpdatedReviews = async () => {
       try {
-        const response = await apiClient.get<Review[]>(`/api/review/tutor/${tutorId}`);
+        const response = await apiClient.get<Review[]>(`/reviews/tutor/${tutorId}`);
         if (response) {
           const reviewList = response || [];
           const reviewsWithOwnerFlag = reviewList.map((review: Review) => ({

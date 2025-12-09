@@ -63,7 +63,7 @@ export const ReviewSubmission: React.FC<ReviewSubmissionProps> = ({
     try {
       setIsSubmitting(true);
 
-      const response = await apiClient.post('/api/review/create', {
+      const response = await apiClient.post('/reviews', {
         bookingId,
         tutorId,
         rating,

@@ -59,7 +59,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
     try {
       setIsDeleting(true);
-      const response = await apiClient.delete(`/api/review/${id}`);
+      const response = await apiClient.delete(`/reviews/${id}`);
 
       if (response) {
         toast.success('Review deleted successfully');
@@ -84,7 +84,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
     }
 
     try {
-      const response = await apiClient.post(`/api/review/${id}/report`, {
+      const response = await apiClient.patch(`/reviews/${id}/flag`, {
         reason: reportReason,
       });
 

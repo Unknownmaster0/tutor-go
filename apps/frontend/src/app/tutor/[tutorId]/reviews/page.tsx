@@ -36,9 +36,7 @@ export default function TutorReviewsPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await apiClient.get<TutorReviewsData>(
-          `/api/review/tutor/${tutorId}/summary`,
-        );
+        const response = await apiClient.get<TutorReviewsData>(`/reviews/tutor/${tutorId}`);
 
         if (response) {
           setReviewsData(response);
@@ -118,7 +116,7 @@ export default function TutorReviewsPage() {
                 const fetchUpdatedSummary = async () => {
                   try {
                     const response = await apiClient.get<TutorReviewsData>(
-                      `/api/review/tutor/${tutorId}/summary`,
+                      `/reviews/tutor/${tutorId}`,
                     );
                     if (response) {
                       setReviewsData(response);
