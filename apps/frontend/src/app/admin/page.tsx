@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { AdminMetrics, RecentActivity, RevenueData, BookingData } from '@/types/admin.types';
@@ -11,7 +11,7 @@ import { BookingsChart } from '@/components/admin/bookings-chart';
 import { ActivityFeed } from '@/components/admin/activity-feed';
 
 export default function AdminDashboard() {
-  const { user, isLoading: authLoading } = useAuthContext();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);

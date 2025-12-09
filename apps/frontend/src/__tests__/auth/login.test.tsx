@@ -12,8 +12,8 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-vi.mock('@/contexts/AuthContext', async () => {
-  const actual = await vi.importActual('@/contexts/AuthContext');
+vi.mock('@/contexts/auth-context', async () => {
+  const actual = await vi.importActual('@/contexts/auth-context');
   return {
     ...actual,
     useAuth: () => ({
@@ -39,7 +39,7 @@ describe('LoginPage', () => {
 
   it('renders login form', () => {
     render(<LoginPage />);
-
+    
     expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -57,9 +57,9 @@ describe('LoginPage', () => {
     };
 
     mockLogin.mockResolvedValueOnce(studentUser);
-
+    
     render(<LoginPage />);
-
+    
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/password/i);
     const submitButton = screen.getByRole('button', { name: /sign in/i });
@@ -89,9 +89,9 @@ describe('LoginPage', () => {
     };
 
     mockLogin.mockResolvedValueOnce(teacherUser);
-
+    
     render(<LoginPage />);
-
+    
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/password/i);
     const submitButton = screen.getByRole('button', { name: /sign in/i });
@@ -121,13 +121,13 @@ describe('LoginPage', () => {
     };
 
     mockLogin.mockResolvedValueOnce(studentUser);
-
+    
     // Mock URL with redirect parameter
     delete (window as any).location;
     (window as any).location = { search: '?redirect=/profile' };
-
+    
     render(<LoginPage />);
-
+    
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/password/i);
     const submitButton = screen.getByRole('button', { name: /sign in/i });
@@ -149,9 +149,9 @@ describe('LoginPage', () => {
     mockLogin.mockRejectedValueOnce({
       response: { data: { message: 'Invalid credentials' } },
     });
-
+    
     render(<LoginPage />);
-
+    
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/password/i);
     const submitButton = screen.getByRole('button', { name: /sign in/i });
@@ -167,7 +167,7 @@ describe('LoginPage', () => {
 
   it('shows error when fields are empty and form is submitted', async () => {
     render(<LoginPage />);
-
+    
     const emailInput = screen.getByLabelText(/email address/i) as HTMLInputElement;
     const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
     const submitButton = screen.getByRole('button', { name: /sign in/i });
@@ -175,11 +175,11 @@ describe('LoginPage', () => {
     // Set empty values explicitly
     fireEvent.change(emailInput, { target: { value: '' } });
     fireEvent.change(passwordInput, { target: { value: '' } });
-
+    
     // Remove required attribute to test our validation
     emailInput.removeAttribute('required');
     passwordInput.removeAttribute('required');
-
+    
     fireEvent.click(submitButton);
 
     await waitFor(() => {

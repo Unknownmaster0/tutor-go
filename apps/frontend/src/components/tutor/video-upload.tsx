@@ -82,7 +82,7 @@ export function VideoUpload({ profile, onUpdate }: VideoUploadProps) {
     if (!confirm('Are you sure you want to delete this video?')) return;
 
     try {
-      await apiClient.delete(`/tutors/delete-video?url=${encodeURIComponent(videoUrl)}`);
+      await apiClient.delete(`/tutors/video?url=${encodeURIComponent(videoUrl)}`);
       setMessage({ type: 'success', text: 'Video deleted successfully!' });
       onUpdate();
     } catch (err: any) {

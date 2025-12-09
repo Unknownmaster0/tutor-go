@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth-context';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useTeachers } from '@/hooks/use-teachers';
 import { useBookings } from '@/hooks/use-bookings';
@@ -88,7 +88,7 @@ function SectionError({ message, onRetry }: { message: string; onRetry: () => vo
 }
 
 function DashboardContent() {
-  const { user, logout } = useAuthContext();
+  const { user, logout } = useAuth();
   const {
     teachers,
     isLoading: teachersLoading,

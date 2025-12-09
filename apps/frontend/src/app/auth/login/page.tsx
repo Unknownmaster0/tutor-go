@@ -1,4 +1,7 @@
-import { LoginForm } from '@/components/auth/LoginForm';
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 
@@ -33,18 +36,23 @@ export default function LoginPage() {
     setError('');
   };
 
-export const metadata = {
-  title: 'Login | TutorGo',
-  description: 'Sign in to your TutorGo account',
-};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
 
-export default function LoginPage() {
-  return (
-    <>
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">TutorGo</h1>
-        <p className="text-gray-600 mt-2">Connect with expert tutors today</p>
-      </div>
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const user = await login(formData);
+
+      // Check for redirect parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirect = urlParams.get('redirect');
 
       if (redirect) {
         router.push(redirect);
