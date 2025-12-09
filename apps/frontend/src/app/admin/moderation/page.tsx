@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { FlaggedContent, ModerationAction } from '@/types/admin.types';
@@ -9,7 +9,7 @@ import { ModerationFilters } from '@/components/admin/moderation-filters';
 import { FlaggedContentList } from '@/components/admin/flagged-content-list';
 
 export default function ContentModeration() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuthContext();
   const router = useRouter();
   const [content, setContent] = useState<FlaggedContent[]>([]);
   const [filteredContent, setFilteredContent] = useState<FlaggedContent[]>([]);

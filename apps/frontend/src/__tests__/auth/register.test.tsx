@@ -12,8 +12,8 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-vi.mock('@/contexts/auth-context', async () => {
-  const actual = await vi.importActual('@/contexts/auth-context');
+vi.mock('@/contexts/AuthContext', async () => {
+  const actual = await vi.importActual('@/contexts/AuthContext');
   return {
     ...actual,
     useAuth: () => ({
@@ -36,7 +36,7 @@ describe('RegisterPage', () => {
 
   it('renders registration form with role selection', () => {
     render(<RegisterPage />);
-    
+
     expect(screen.getByText('Create your account')).toBeInTheDocument();
     expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
@@ -47,18 +47,18 @@ describe('RegisterPage', () => {
 
   it('shows role options for student and tutor', () => {
     render(<RegisterPage />);
-    
+
     const roleSelect = screen.getByLabelText(/i am a/i) as HTMLSelectElement;
     expect(roleSelect).toBeInTheDocument();
-    
-    const options = Array.from(roleSelect.options).map(opt => opt.value);
+
+    const options = Array.from(roleSelect.options).map((opt) => opt.value);
     expect(options).toContain('student');
     expect(options).toContain('tutor');
   });
 
   it('validates password match', async () => {
     render(<RegisterPage />);
-    
+
     const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/^password/i);
@@ -78,7 +78,7 @@ describe('RegisterPage', () => {
 
   it('validates password length', async () => {
     render(<RegisterPage />);
-    
+
     const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/^password/i);
@@ -108,9 +108,9 @@ describe('RegisterPage', () => {
     };
 
     mockRegister.mockResolvedValueOnce(studentUser);
-    
+
     render(<RegisterPage />);
-    
+
     const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/^password/i);
@@ -149,9 +149,9 @@ describe('RegisterPage', () => {
     };
 
     mockRegister.mockResolvedValueOnce(teacherUser);
-    
+
     render(<RegisterPage />);
-    
+
     const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/^password/i);
@@ -182,9 +182,9 @@ describe('RegisterPage', () => {
     mockRegister.mockRejectedValueOnce({
       response: { data: { message: 'Email already exists' } },
     });
-    
+
     render(<RegisterPage />);
-    
+
     const nameInput = screen.getByLabelText(/full name/i);
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/^password/i);
