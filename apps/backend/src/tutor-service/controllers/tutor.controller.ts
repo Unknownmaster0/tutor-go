@@ -165,7 +165,8 @@ export class TutorController {
         return;
       }
 
-      const { videoUrl } = req.body;
+      // Accept videoUrl from both query params and body for flexibility
+      const videoUrl = req.query.url as string || req.body.videoUrl;
       if (!videoUrl) {
         ApiResponse.error(res, 'Video URL is required', 400);
         return;
