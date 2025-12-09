@@ -192,7 +192,7 @@ export class TutorController {
         return;
       }
 
-      const { latitude, longitude, radius, subject, minRate, maxRate, minRating } = req.query;
+      const { latitude, longitude, radius, subject, minRate, maxRate, minRating, page = '1', limit = '20' } = req.query;
 
       const searchParams = {
         latitude: parseFloat(latitude as string),
@@ -202,10 +202,16 @@ export class TutorController {
         minRate: minRate ? parseFloat(minRate as string) : undefined,
         maxRate: maxRate ? parseFloat(maxRate as string) : undefined,
         minRating: minRating ? parseFloat(minRating as string) : undefined,
+        page: parseInt(page as string, 10) || 1,
+        limit: parseInt(limit as string, 10) || 20,
       };
 
-      // Generate cache key
-      const cacheKey = this.redisService.generateSearchCacheKey(searchParams);
+      // Generate cache key (include pagination)
+      const cacheKey = this.redisService.generateSearchCacheKey({
+        ...searchParams,
+        page: searchParams.page,
+        limit: searchParams.limit,
+      });
 
       // Check cache
       const cachedResults = await this.redisService.getCachedSearchResults(cacheKey);
@@ -214,8 +220,8 @@ export class TutorController {
         return;
       }
 
-      // Search tutors
-      const tutors = await this.tutorService.searchTutors(searchParams);
+      // Search tutors with pagination
+      const tutors = await this.tutorService.searchTutors(searchParams, searchParams.page, searchParams.limit);
 
       // Cache results for 5 minutes
       await this.redisService.cacheSearchResults(cacheKey, tutors, 300);
@@ -347,6 +353,32 @@ export class TutorController {
         console.error('Remove availability slot error:', error);
         ApiResponse.error(res, 'Failed to remove availability slot', 500);
       }
+    }
+  };
+
+  getTopRatedTutors = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { limit = '10' } = req.query;
+      const limitNum = Math.min(Math.max(1, parseInt(limit as string)), 50); // Limit between 1-50
+
+      // Check cache first
+      const cacheKey = `top-rated-tutors:${limitNum}`;
+      const cachedResults = await this.redisService.getCachedSearchResults(cacheKey);
+      if (cachedResults) {
+        ApiResponse.success(res, cachedResults, 'Top-rated tutors retrieved from cache');
+        return;
+      }
+
+      // Get top-rated tutors
+      const tutors = await this.tutorService.getTopRatedTutors(limitNum);
+
+      // Cache results for 30 minutes
+      await this.redisService.cacheSearchResults(cacheKey, tutors, 1800);
+
+      ApiResponse.success(res, tutors, 'Top-rated tutors retrieved successfully');
+    } catch (error: any) {
+      console.error('Get top-rated tutors error:', error);
+      ApiResponse.error(res, 'Failed to retrieve top-rated tutors', 500);
     }
   };
 }
