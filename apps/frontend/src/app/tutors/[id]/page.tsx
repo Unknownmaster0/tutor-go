@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { VideoPlayer } from '@/components/video/video-player';
 import { ReviewCard } from '@/components/review/review-card';
 import { AvailabilityCalendar } from '@/components/calendar/availability-calendar';
+import { TutorLocationMap } from '@/components/map/tutor-location-map';
 import { TutorProfile } from '@/types/tutor.types';
 import { apiClient } from '@/lib/api-client';
 
@@ -61,7 +62,9 @@ export default function TutorProfilePage() {
 
   const handleSlotSelect = (date: Date, slot: any) => {
     if (tutor) {
-      router.push(`/booking/new?tutorId=${tutor.id}&date=${date.toISOString()}&start=${slot.startTime}&end=${slot.endTime}`);
+      router.push(
+        `/booking/new?tutorId=${tutor.id}&date=${date.toISOString()}&start=${slot.startTime}&end=${slot.endTime}`,
+      );
     }
   };
 
@@ -80,11 +83,23 @@ export default function TutorProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <svg className="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-16 h-16 mx-auto text-red-500 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Profile Not Found</h2>
-          <p className="text-gray-600 mb-4">{error || 'The tutor profile you are looking for does not exist.'}</p>
+          <p className="text-gray-600 mb-4">
+            {error || 'The tutor profile you are looking for does not exist.'}
+          </p>
           <button
             onClick={() => router.push('/search')}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -106,7 +121,12 @@ export default function TutorProfilePage() {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back to Search
           </button>
@@ -122,7 +142,7 @@ export default function TutorProfilePage() {
             {/* Profile Info */}
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{tutor.name}</h1>
-              
+
               <div className="flex items-center gap-4 mb-3">
                 <div className="flex items-center">
                   <svg className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -138,8 +158,18 @@ export default function TutorProfilePage() {
 
                 <div className="flex items-center gap-1 text-gray-600">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   <span>{tutor.location.address}</span>
                 </div>
@@ -179,6 +209,35 @@ export default function TutorProfilePage() {
                       className="aspect-video"
                     />
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Location Map */}
+            {tutor.location && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Service Location
+                </h2>
+                <TutorLocationMap
+                  latitude={tutor.location.coordinates[1]} // latitude (second element)
+                  longitude={tutor.location.coordinates[0]} // longitude (first element)
+                  tutorName={tutor.name}
+                  address={tutor.location.address}
+                  className="w-full h-96 rounded-lg border border-gray-200"
+                />
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-gray-700">
+                    <span className="font-semibold">📍 Service Location:</span>{' '}
+                    {tutor.location.address}
+                  </p>
                 </div>
               </div>
             )}
@@ -224,7 +283,9 @@ export default function TutorProfilePage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Qualifications</h3>
                       <ul className="list-disc list-inside space-y-1">
                         {tutor.qualifications.map((qual, index) => (
-                          <li key={index} className="text-gray-700">{qual}</li>
+                          <li key={index} className="text-gray-700">
+                            {qual}
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -239,7 +300,9 @@ export default function TutorProfilePage() {
                             className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg"
                           >
                             <div className="font-medium text-blue-900">{subject.name}</div>
-                            <div className="text-xs text-blue-600 capitalize">{subject.proficiency}</div>
+                            <div className="text-xs text-blue-600 capitalize">
+                              {subject.proficiency}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -248,13 +311,21 @@ export default function TutorProfilePage() {
                 ) : (
                   <div className="space-y-4">
                     {reviews.length > 0 ? (
-                      reviews.map((review) => (
-                        <ReviewCard key={review.id} review={review} />
-                      ))
+                      reviews.map((review) => <ReviewCard key={review.id} review={review} />)
                     ) : (
                       <div className="text-center py-8 text-gray-500">
-                        <svg className="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        <svg
+                          className="w-12 h-12 mx-auto mb-2 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                          />
                         </svg>
                         <p>No reviews yet</p>
                       </div>

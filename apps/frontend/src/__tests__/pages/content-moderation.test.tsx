@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import ContentModeration from '@/app/admin/moderation/page';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 import { vi } from 'vitest';
 
@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
 }));
 
-vi.mock('@/contexts/auth-context', () => ({
+vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
@@ -81,7 +81,7 @@ describe('ContentModeration', () => {
     });
 
     (apiClient.get as any).mockImplementation(
-      () => new Promise(() => {}) // Never resolves
+      () => new Promise(() => {}), // Never resolves
     );
 
     render(<ContentModeration />);

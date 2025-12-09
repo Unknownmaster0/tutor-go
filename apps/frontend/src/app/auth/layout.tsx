@@ -1,8 +1,4 @@
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     // We remove the centering flexbox and max-width constraints here.
     // This simply provides the background and allows the 'children' (Login/Register pages)

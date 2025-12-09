@@ -10,102 +10,232 @@ interface TutorMapProps {
   className?: string;
 }
 
+/**
+ * TutorMap Component - Google Maps Version
+ *
+ * Displays multiple tutors on a single interactive Google Map.
+ * Shows all tutors with markers and info windows.
+ *
+ * @param tutors - Array of tutor profiles to display
+ * @param center - Optional center coordinates [longitude, latitude]
+ * @param onMarkerClick - Callback when marker is clicked
+ * @param className - Optional CSS classes
+ */
 export function TutorMap({ tutors, center, onMarkerClick, className = '' }: TutorMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+  const infoWindowsRef = useRef<any[]>([]);
   const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if Mapbox token is available
-    const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-    
-    if (!mapboxToken) {
-      setMapError('Map configuration is missing. Please add NEXT_PUBLIC_MAPBOX_TOKEN to your environment variables.');
+    if (!mapContainerRef.current || tutors.length === 0) return;
+
+    // Check if Google Maps API key is available
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (!apiKey) {
+      setMapError('Google Maps API key is not configured');
       return;
     }
 
-    // Dynamic import of mapbox-gl to avoid SSR issues
-    import('mapbox-gl').then((mapboxgl) => {
-      if (!mapContainerRef.current) return;
+    // Check if Google Maps is already loaded
+    if ((window as any).google?.maps) {
+      initializeMap();
+    } else {
+      // Load Google Maps script
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+      script.async = true;
+      script.defer = true;
 
-      mapboxgl.default.accessToken = mapboxToken;
+      script.onload = () => {
+        initializeMap();
+      };
 
-      const map = new mapboxgl.default.Map({
-        container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: center || [-74.5, 40], // Default to New York area
-        zoom: 11,
+      script.onerror = () => {
+        setMapError('Failed to load Google Maps');
+      };
+
+      document.head.appendChild(script);
+    }
+
+    return () => {
+      // Cleanup
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      infoWindowsRef.current.forEach((iw) => iw.close());
+      markersRef.current = [];
+      infoWindowsRef.current = [];
+    };
+  }, [tutors]);
+
+  const initializeMap = () => {
+    if (!mapContainerRef.current || !tutors.length) return;
+
+    try {
+      const googleMaps = (window as any).google.maps;
+
+      // Calculate center and bounds
+      let centerLat = 40;
+      let centerLng = -74.5;
+      const bounds = new googleMaps.LatLngBounds();
+
+      // Get center from tutors data or use provided center
+      if (tutors.length > 0 && tutors[0].location?.coordinates) {
+        const [lng, lat] = tutors[0].location.coordinates;
+        centerLng = center ? center[0] : lng;
+        centerLat = center ? center[1] : lat;
+      } else if (center) {
+        centerLng = center[0];
+        centerLat = center[1];
+      }
+
+      // Create map
+      const map = new googleMaps.Map(mapContainerRef.current, {
+        center: { lat: centerLat, lng: centerLng },
+        zoom: 12,
+        mapTypeControl: true,
+        fullscreenControl: true,
+        streetViewControl: true,
+        zoomControl: true,
+        gestureHandling: 'auto',
       });
 
-      // Add navigation controls
-      map.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
+      mapInstanceRef.current = map;
 
       // Add markers for each tutor
       tutors.forEach((tutor) => {
         if (tutor.location?.coordinates) {
           const [lng, lat] = tutor.location.coordinates;
+          bounds.extend(new googleMaps.LatLng(lat, lng));
 
-          // Create a custom marker element
-          const el = document.createElement('div');
-          el.className = 'tutor-marker';
-          el.style.width = '30px';
-          el.style.height = '30px';
-          el.style.borderRadius = '50%';
-          el.style.backgroundColor = '#3B82F6';
-          el.style.border = '3px solid white';
-          el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
-          el.style.cursor = 'pointer';
+          // Create marker
+          const marker = new googleMaps.Marker({
+            position: { lat, lng },
+            map: map,
+            title: tutor.name,
+            icon: {
+              path: googleMaps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#3B82F6', // Blue color
+              fillOpacity: 1,
+              strokeColor: '#fff',
+              strokeWeight: 2,
+            },
+          });
 
-          // Add marker to map
-          const marker = new mapboxgl.default.Marker(el)
-            .setLngLat([lng, lat])
-            .addTo(map);
+          markersRef.current.push(marker);
 
-          // Add popup
-          const popup = new mapboxgl.default.Popup({ offset: 25 }).setHTML(`
-            <div style="padding: 8px;">
-              <h3 style="font-weight: bold; margin-bottom: 4px;">${tutor.name}</h3>
-              <p style="font-size: 14px; color: #666;">$${tutor.hourlyRate}/hr</p>
-              <p style="font-size: 14px; color: #666;">⭐ ${tutor.rating.toFixed(1)} (${tutor.totalReviews} reviews)</p>
-            </div>
-          `);
+          // Create info window
+          const infoWindow = new googleMaps.InfoWindow({
+            content: `
+              <div style="padding: 12px; max-width: 280px; font-family: Arial, sans-serif;">
+                <h3 style="
+                  font-weight: bold; 
+                  margin: 0 0 8px 0; 
+                  color: #1f2937;
+                  font-size: 16px;
+                ">
+                  ${escapeHtml(tutor.name)}
+                </h3>
+                <div style="
+                  margin: 8px 0;
+                  color: #6b7280;
+                  font-size: 13px;
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 8px;
+                ">
+                  <span style="color: #3b82f6; margin-top: 2px;">💵</span>
+                  <span>$${tutor.hourlyRate}/hr</span>
+                </div>
+                <div style="
+                  margin: 8px 0;
+                  color: #6b7280;
+                  font-size: 13px;
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 8px;
+                ">
+                  <span style="color: #fbbf24;">⭐</span>
+                  <span>${tutor.rating.toFixed(1)} (${tutor.totalReviews} reviews)</span>
+                </div>
+                <div style="
+                  margin: 8px 0;
+                  color: #6b7280;
+                  font-size: 13px;
+                  display: flex;
+                  align-items: flex-start;
+                  gap: 8px;
+                ">
+                  <span>📍</span>
+                  <span>${escapeHtml(tutor.location.address)}</span>
+                </div>
+              </div>
+            `,
+          });
 
-          marker.setPopup(popup);
+          infoWindowsRef.current.push(infoWindow);
 
-          // Handle marker click
-          el.addEventListener('click', () => {
+          // Show info window on marker click
+          marker.addListener('click', () => {
+            // Close all other info windows
+            infoWindowsRef.current.forEach((iw) => iw.close());
+            infoWindow.open(map, marker);
+
+            // Trigger callback
             if (onMarkerClick) {
               onMarkerClick(tutor);
             }
           });
+
+          // Show first tutor's info window by default
+          if (tutors.indexOf(tutor) === 0) {
+            infoWindow.open(map, marker);
+          }
         }
       });
 
-      // Fit map to show all markers
-      if (tutors.length > 0) {
-        const bounds = new mapboxgl.default.LngLatBounds();
-        tutors.forEach((tutor) => {
-          if (tutor.location?.coordinates) {
-            bounds.extend(tutor.location.coordinates as [number, number]);
-          }
-        });
-        map.fitBounds(bounds, { padding: 50 });
+      // Fit map to bounds
+      if (tutors.length > 1) {
+        map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
+      } else {
+        map.setZoom(15);
       }
 
-      return () => {
-        map.remove();
-      };
-    }).catch((error) => {
-      console.error('Error loading map:', error);
-      setMapError('Failed to load map. Please try again later.');
-    });
-  }, [tutors, center, onMarkerClick]);
+      setMapError(null);
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      setMapError('Failed to initialize map');
+    }
+  };
+
+  const escapeHtml = (text: string): string => {
+    const map: { [key: string]: string } = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;',
+    };
+    return text.replace(/[&<>"']/g, (char) => map[char]);
+  };
 
   if (mapError) {
     return (
       <div className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center p-8">
-          <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          <svg
+            className="w-16 h-16 mx-auto text-gray-400 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+            />
           </svg>
           <p className="text-gray-600">{mapError}</p>
         </div>
@@ -113,7 +243,5 @@ export function TutorMap({ tutors, center, onMarkerClick, className = '' }: Tuto
     );
   }
 
-  return (
-    <div ref={mapContainerRef} className={className} />
-  );
+  return <div ref={mapContainerRef} className={className} style={{ minHeight: '500px' }} />;
 }

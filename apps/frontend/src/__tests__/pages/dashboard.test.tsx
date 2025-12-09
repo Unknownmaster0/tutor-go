@@ -98,7 +98,7 @@ const mockUser = {
 
 const mockLogout = vi.fn();
 
-vi.mock('@/contexts/auth-context', () => ({
+vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
     user: mockUser,
     isLoading: false,

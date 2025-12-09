@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { ProfileEditForm } from '@/components/tutor/profile-edit-form';
 import { VideoUpload } from '@/components/tutor/video-upload';
@@ -12,11 +12,13 @@ import { TutorProfile } from '@/types/tutor.types';
 import Link from 'next/link';
 
 function TutorProfileManagementContent() {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [profile, setProfile] = useState<TutorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'profile' | 'videos' | 'subjects' | 'qualifications'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'videos' | 'subjects' | 'qualifications'>(
+    'profile',
+  );
 
   useEffect(() => {
     loadProfile();
@@ -24,7 +26,7 @@ function TutorProfileManagementContent() {
 
   const loadProfile = async () => {
     if (!user?.id) return;
-    
+
     try {
       setLoading(true);
       setError(null);

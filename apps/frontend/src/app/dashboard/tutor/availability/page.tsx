@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { AvailabilityManager } from '@/components/tutor/availability-manager';
 import { apiClient } from '@/lib/api-client';
@@ -9,7 +9,7 @@ import { TutorProfile } from '@/types/tutor.types';
 import Link from 'next/link';
 
 function TutorAvailabilityContent() {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [profile, setProfile] = useState<TutorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,11 +20,11 @@ function TutorAvailabilityContent() {
 
   const loadProfile = async () => {
     if (!user?.id) return;
-    
+
     try {
       setLoading(true);
       setError(null);
-      const data = await apiClient.get<TutorProfile>(`/tutors/profile/${user.id}`);
+      const data = await apiClient.get<TutorProfile>(`/tutors/profile`);
       setProfile(data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load profile');
