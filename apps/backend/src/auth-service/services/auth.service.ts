@@ -21,7 +21,7 @@ export class AuthService {
     this.emailService = emailService;
   }
 
-  async register(data: RegisterDto): Promise<RegisterResponseDto> {
+  async register(data: RegisterDto): Promise<AuthResponseDto> {
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email },
@@ -48,13 +48,22 @@ export class AuthService {
     // Send verification email (mock for now)
     await this.emailService.sendVerificationEmail(user.email, user.name);
 
+    // Generate tokens
+    const accessToken = this.generateAccessToken(user);
+    const refreshToken = this.generateRefreshToken(user);
+
+    // Store refresh token in Redis
+    await this.redisService.setRefreshToken(user.id, refreshToken);
+
     return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      emailVerified: user.emailVerified,
-      createdAt: user.createdAt,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
     };
   }
 
