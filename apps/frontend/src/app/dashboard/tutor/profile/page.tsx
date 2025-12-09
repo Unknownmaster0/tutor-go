@@ -28,7 +28,7 @@ function TutorProfileManagementContent() {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiClient.get<TutorProfile>(`/tutors/profile/${user.id}`);
+      const data = await apiClient.get<TutorProfile>(`/tutors/profile`);
       setProfile(data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load profile');
