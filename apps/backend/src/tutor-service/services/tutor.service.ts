@@ -67,7 +67,7 @@ export class TutorService {
       totalReviews: 0,
     });
 
-    return this.mapToResponseDto(profile);
+    return this.mapToResponseDtoWithName(profile, data.userId);
   }
 
   async updateProfile(userId: string, data: UpdateTutorProfileDto): Promise<TutorProfileResponseDto> {
@@ -104,7 +104,7 @@ export class TutorService {
 
     await profile.save();
 
-    return this.mapToResponseDto(profile);
+    return this.mapToResponseDtoWithName(profile, userId);
   }
 
   async getProfileByUserId(userId: string): Promise<TutorProfileResponseDto | null> {
@@ -112,7 +112,8 @@ export class TutorService {
     if (!profile) {
       return null;
     }
-    return this.mapToResponseDto(profile);
+    
+    return this.mapToResponseDtoWithName(profile, userId);
   }
 
   async getProfileById(id: string): Promise<TutorProfileResponseDto | null> {
@@ -120,7 +121,8 @@ export class TutorService {
     if (!profile) {
       return null;
     }
-    return this.mapToResponseDto(profile);
+    
+    return this.mapToResponseDtoWithName(profile);
   }
 
   async getProfileDetailById(id: string): Promise<TutorProfileDetailDto | null> {
@@ -195,8 +197,7 @@ export class TutorService {
     }
 
     return {
-      ...this.mapToResponseDto(profile),
-      name: user?.name,
+      ...(await this.mapToResponseDtoWithName(profile)),
       reviews: reviewDtos,
       ratingBreakdown,
     };
@@ -390,7 +391,7 @@ export class TutorService {
     minRate?: number;
     maxRate?: number;
     minRating?: number;
-  }): Promise<TutorProfileResponseDto[]> {
+  }, page: number = 1, limit: number = 20): Promise<{ data: TutorProfileResponseDto[]; total: number; page: number; limit: number }> {
     const { latitude, longitude, radius, subject, minRate, maxRate, minRating } = params;
 
     // Build query
@@ -423,23 +424,48 @@ export class TutorService {
       query.rating = { $gte: minRating };
     }
 
-    // Execute query
-    const profiles = await TutorProfile.find(query).limit(50);
+    // Get total count for pagination
+    const total = await TutorProfile.countDocuments(query);
 
-    // Map to response DTOs and calculate distances
-    return profiles.map((profile) => {
-      const distance = this.geocodingService.calculateDistance(
-        latitude,
-        longitude,
-        profile.location.coordinates[1],
-        profile.location.coordinates[0]
-      );
+    const skip = (page - 1) * limit;
 
-      return {
-        ...this.mapToResponseDto(profile),
-        distance: Math.round(distance * 100) / 100, // Round to 2 decimal places
-      };
-    });
+    // Execute paginated query
+    const profiles = await TutorProfile.find(query).skip(skip).limit(limit);
+
+    // Map to response DTOs and calculate distances, fetch user names
+    const data = await Promise.all(
+      profiles.map(async (profile) => {
+        const distance = this.geocodingService.calculateDistance(
+          latitude,
+          longitude,
+          profile.location.coordinates[1],
+          profile.location.coordinates[0]
+        );
+
+        const dto = await this.mapToResponseDtoWithName(profile);
+
+        return {
+          ...dto,
+          distance: Math.round(distance * 100) / 100, // Round to 2 decimal places
+        };
+      })
+    );
+
+    return { data, total, page, limit };
+  }
+
+  async getTopRatedTutors(limit: number = 10): Promise<TutorProfileResponseDto[]> {
+    // Get tutors sorted by rating (descending) and total reviews (descending as tiebreaker)
+    const profiles = await TutorProfile.find({})
+      .sort({ rating: -1, totalReviews: -1 })
+      .limit(limit);
+
+    // Map to response DTOs with user names
+    const responseDtos = await Promise.all(
+      profiles.map(async (profile) => this.mapToResponseDtoWithName(profile))
+    );
+
+    return responseDtos;
   }
 
   private mapToResponseDto(profile: ITutorProfile): TutorProfileResponseDto {
@@ -458,5 +484,22 @@ export class TutorService {
       createdAt: profile.createdAt,
       updatedAt: profile.updatedAt,
     };
+  }
+
+  private async mapToResponseDtoWithName(profile: ITutorProfile, userId?: string): Promise<TutorProfileResponseDto> {
+    const dto = this.mapToResponseDto(profile);
+    
+    // Fetch user name from Prisma
+    const userID = userId || profile.userId;
+    const user = await prisma.user.findUnique({
+      where: { id: userID },
+      select: { name: true },
+    });
+    
+    if (user) {
+      dto.name = user.name;
+    }
+    
+    return dto;
   }
 }

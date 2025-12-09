@@ -94,7 +94,7 @@ async function main() {
         email: 'david.physics@example.com',
         passwordHash: hashedPassword,
         name: 'David Chen',
-        role: 'tutor',
+        role: 'tutor',  
         phone: '+1234567893',
         emailVerified: true,
       },
