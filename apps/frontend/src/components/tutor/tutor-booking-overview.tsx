@@ -36,14 +36,14 @@ export function TutorBookingOverview({ tutorId }: TutorBookingOverviewProps) {
       setLoading(true);
       setError(null);
 
-      // Fetch upcoming bookings
-      const bookingsData = await apiClient.get<{ bookings: Booking[] }>(
-        `/bookings/tutor/${tutorId}?status=confirmed`
+      // Fetch upcoming bookings for the tutor user
+      const bookingsData = await apiClient.get<Booking[]>(
+        `/bookings/user/${tutorId}?status=confirmed`,
       );
 
       // Filter upcoming bookings (future dates)
       const now = new Date();
-      const upcoming = bookingsData.bookings
+      const upcoming = (bookingsData || [])
         .filter((b) => new Date(b.startTime) > now)
         .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
         .slice(0, 5);
@@ -51,20 +51,16 @@ export function TutorBookingOverview({ tutorId }: TutorBookingOverviewProps) {
       setUpcomingBookings(upcoming);
 
       // Calculate stats
-      const allBookings = await apiClient.get<{ bookings: Booking[] }>(
-        `/bookings/tutor/${tutorId}`
-      );
+      const allBookings = await apiClient.get<Booking[]>(`/bookings/user/${tutorId}`);
 
-      const completed = allBookings.bookings.filter((b) => b.status === 'completed');
+      const completed = (allBookings || []).filter((b) => b.status === 'completed');
       const totalEarnings = completed.reduce((sum, b) => sum + b.totalAmount, 0);
 
       const thisMonth = new Date();
       thisMonth.setDate(1);
       thisMonth.setHours(0, 0, 0, 0);
 
-      const thisMonthCompleted = completed.filter(
-        (b) => new Date(b.createdAt) >= thisMonth
-      );
+      const thisMonthCompleted = completed.filter((b) => new Date(b.createdAt) >= thisMonth);
       const thisMonthEarnings = thisMonthCompleted.reduce((sum, b) => sum + b.totalAmount, 0);
 
       setStats({
@@ -262,7 +258,9 @@ export function TutorBookingOverview({ tutorId }: TutorBookingOverviewProps) {
                         </span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{booking.studentName || 'Student'}</p>
+                        <p className="font-medium text-gray-900">
+                          {booking.studentName || 'Student'}
+                        </p>
                         <p className="text-sm text-gray-600">{booking.subject}</p>
                       </div>
                     </div>
@@ -310,9 +308,7 @@ export function TutorBookingOverview({ tutorId }: TutorBookingOverviewProps) {
                 />
               </svg>
               <p className="text-gray-500">No upcoming sessions</p>
-              <p className="text-sm text-gray-400 mt-1">
-                Your upcoming bookings will appear here
-              </p>
+              <p className="text-sm text-gray-400 mt-1">Your upcoming bookings will appear here</p>
             </div>
           )}
         </div>
