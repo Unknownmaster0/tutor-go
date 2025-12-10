@@ -38,7 +38,8 @@ app.get('/health', (req, res) => {
 });
 
 // Admin API Routes
-app.use('/admin', createAdminRoutes(adminController));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use('/admin', createAdminRoutes(adminController) as any);
 
 // 404 handler
 app.use(notFoundHandler);

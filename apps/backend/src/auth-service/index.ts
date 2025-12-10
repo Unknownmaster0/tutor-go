@@ -48,8 +48,7 @@ app.get('/health', (req, res) => {
 });
 
 // Auth routes
-// Cast to `any` to avoid TypeScript overload resolution issues
-// (runtime behavior unchanged: `createAuthRoutes` returns an Express Router)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 app.use('/auth', createAuthRoutes(authController) as any);
 
 // 404 handler

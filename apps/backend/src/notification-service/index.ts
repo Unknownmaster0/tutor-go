@@ -45,7 +45,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-// Cast to `any` to avoid TypeScript overload resolution issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 app.use('/notifications', createNotificationRoutes(notificationController) as any);
 
 // 404 handler
