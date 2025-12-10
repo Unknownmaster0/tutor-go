@@ -12,12 +12,10 @@ import {
 export class PaymentService {
   constructor(
     private prisma: PrismaClient,
-    private rabbitMQService: RabbitMQService
+    private rabbitMQService: RabbitMQService,
   ) {}
 
-  async createPaymentIntent(
-    dto: CreatePaymentIntentDto
-  ): Promise<PaymentIntentResponse> {
+  async createPaymentIntent(dto: CreatePaymentIntentDto): Promise<PaymentIntentResponse> {
     // Verify booking exists and is in pending status
     const booking = await this.prisma.booking.findUnique({
       where: { id: dto.bookingId },
@@ -60,9 +58,7 @@ export class PaymentService {
 
   async confirmPayment(dto: ConfirmPaymentDto): Promise<void> {
     // Retrieve payment intent from Stripe
-    const paymentIntent = await stripeClient.paymentIntents.retrieve(
-      dto.paymentIntentId
-    );
+    const paymentIntent = await stripeClient.paymentIntents.retrieve(dto.paymentIntentId);
 
     if (paymentIntent.status !== 'succeeded') {
       throw new Error('Payment has not succeeded');
@@ -178,20 +174,23 @@ export class PaymentService {
 
   async handleWebhookEvent(event: Stripe.Event): Promise<void> {
     switch (event.type) {
-      case 'payment_intent.succeeded':
+      case 'payment_intent.succeeded': {
         const succeededIntent = event.data.object as Stripe.PaymentIntent;
         console.log('Payment succeeded:', succeededIntent.id);
         break;
+      }
 
-      case 'payment_intent.payment_failed':
+      case 'payment_intent.payment_failed': {
         const failedIntent = event.data.object as Stripe.PaymentIntent;
         await this.handlePaymentFailure(failedIntent.id);
         break;
+      }
 
-      case 'charge.refunded':
+      case 'charge.refunded': {
         const refundedCharge = event.data.object as Stripe.Charge;
         console.log('Charge refunded:', refundedCharge.id);
         break;
+      }
 
       default:
         console.log(`Unhandled event type: ${event.type}`);

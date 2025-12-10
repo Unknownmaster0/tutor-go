@@ -1,6 +1,6 @@
 import { prisma } from '../../shared';
 import { Logger } from '../../shared';
-import { SendMessageDto, MessageResponseDto } from '../dto/message.dto';
+import { MessageResponseDto } from '../dto/message.dto';
 
 export class MessageService {
   private logger: Logger;
@@ -45,7 +45,7 @@ export class MessageService {
     senderId: string,
     receiverId: string,
     conversationId: string,
-    message: string
+    message: string,
   ): Promise<MessageResponseDto> {
     try {
       const newMessage = await prisma.message.create({
@@ -126,7 +126,7 @@ export class MessageService {
   async getMessagesByConversation(
     conversationId: string,
     limit: number = 50,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<MessageResponseDto[]> {
     try {
       const messages = await prisma.message.findMany({
@@ -140,7 +140,7 @@ export class MessageService {
         skip: offset,
       });
 
-      return messages.map(msg => ({
+      return messages.map((msg) => ({
         id: msg.id,
         conversationId: msg.conversationId,
         senderId: msg.senderId,
@@ -163,10 +163,7 @@ export class MessageService {
       // Get all unique conversation IDs where user is sender or receiver
       const messages = await prisma.message.findMany({
         where: {
-          OR: [
-            { senderId: userId },
-            { receiverId: userId },
-          ],
+          OR: [{ senderId: userId }, { receiverId: userId }],
         },
         orderBy: {
           createdAt: 'desc',
@@ -204,7 +201,7 @@ export class MessageService {
             lastMessageTime: lastMessage?.createdAt || new Date(),
             unreadCount,
           };
-        })
+        }),
       );
 
       return conversations;

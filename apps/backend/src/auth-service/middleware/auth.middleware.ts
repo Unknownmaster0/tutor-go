@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { ApiResponse } from '../../shared';
 
@@ -10,7 +10,11 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+export const authenticateToken: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
