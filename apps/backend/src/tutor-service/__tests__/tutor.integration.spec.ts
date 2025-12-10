@@ -59,7 +59,7 @@ describe('Tutor Service - Integration Tests', () => {
       };
 
       const mockCoordinates = {
-        latitude: 40.730610,
+        latitude: 40.73061,
         longitude: -73.935242,
       };
 
@@ -89,7 +89,9 @@ describe('Tutor Service - Integration Tests', () => {
 
       expect(result).toHaveProperty('_id');
       expect(result.bio).toBe(profileData.bio);
-      expect(mockGeocodingService.geocodeAddress).toHaveBeenCalledWith(profileData.location.address);
+      expect(mockGeocodingService.geocodeAddress).toHaveBeenCalledWith(
+        profileData.location.address,
+      );
       expect(mockTutorModel.create).toHaveBeenCalled();
     });
 
@@ -177,7 +179,7 @@ describe('Tutor Service - Integration Tests', () => {
     it('should search tutors by location within radius', async () => {
       const searchParams = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         radius: 10,
       };
 
@@ -193,7 +195,7 @@ describe('Tutor Service - Integration Tests', () => {
           totalReviews: 20,
           location: {
             address: '123 Main St',
-            coordinates: { type: 'Point', coordinates: [-74.0060, 40.7128] },
+            coordinates: { type: 'Point', coordinates: [-74.006, 40.7128] },
           },
           distance: 5.2,
         },
@@ -208,7 +210,7 @@ describe('Tutor Service - Integration Tests', () => {
           totalReviews: 15,
           location: {
             address: '456 Oak Ave',
-            coordinates: { type: 'Point', coordinates: [-74.0100, 40.7150] },
+            coordinates: { type: 'Point', coordinates: [-74.01, 40.715] },
           },
           distance: 8.1,
         },
@@ -226,7 +228,7 @@ describe('Tutor Service - Integration Tests', () => {
     it('should filter tutors by subject', async () => {
       const searchParams = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         radius: 10,
         subject: 'Mathematics',
       };
@@ -254,7 +256,7 @@ describe('Tutor Service - Integration Tests', () => {
     it('should filter tutors by rate range', async () => {
       const searchParams = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         radius: 10,
         minRate: 40,
         maxRate: 55,
@@ -282,7 +284,7 @@ describe('Tutor Service - Integration Tests', () => {
     it('should filter tutors by minimum rating', async () => {
       const searchParams = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         radius: 10,
         minRating: 4.5,
       };
@@ -308,7 +310,7 @@ describe('Tutor Service - Integration Tests', () => {
     it('should return empty array when no tutors match criteria', async () => {
       const searchParams = {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         radius: 1,
       };
 
@@ -384,7 +386,8 @@ describe('Tutor Service - Integration Tests', () => {
 
       const result = await tutorService.getProfileById(tutorId);
 
-      expect(result.demoVideos).toHaveLength(2);
+      expect(result).toBeDefined();
+      expect(result!.demoVideos).toHaveLength(2);
     });
   });
 
@@ -403,7 +406,7 @@ describe('Tutor Service - Integration Tests', () => {
       };
 
       const mockCoordinates = {
-        latitude: 40.730610,
+        latitude: 40.73061,
         longitude: -73.935242,
       };
 
@@ -460,7 +463,8 @@ describe('Tutor Service - Integration Tests', () => {
       mockTutorModel.findById.mockResolvedValue(completeProfile);
 
       const getResult = await tutorService.getProfileById(mockProfile._id);
-      expect(getResult.demoVideos).toContain(mockVideoUrl);
+      expect(getResult).toBeDefined();
+      expect(getResult!.demoVideos).toContain(mockVideoUrl);
     });
   });
 });

@@ -70,7 +70,10 @@ export class TutorService {
     return this.mapToResponseDtoWithName(profile, data.userId);
   }
 
-  async updateProfile(userId: string, data: UpdateTutorProfileDto): Promise<TutorProfileResponseDto> {
+  async updateProfile(
+    userId: string,
+    data: UpdateTutorProfileDto,
+  ): Promise<TutorProfileResponseDto> {
     const profile = await TutorProfile.findOne({ userId });
     if (!profile) {
       throw new Error('Tutor profile not found');
@@ -112,7 +115,7 @@ export class TutorService {
     if (!profile) {
       return null;
     }
-    
+
     return this.mapToResponseDtoWithName(profile, userId);
   }
 
@@ -121,7 +124,7 @@ export class TutorService {
     if (!profile) {
       return null;
     }
-    
+
     return this.mapToResponseDtoWithName(profile);
   }
 
@@ -131,12 +134,6 @@ export class TutorService {
     if (!profile) {
       return null;
     }
-
-    // Get user details from PostgreSQL
-    const user = await prisma.user.findUnique({
-      where: { id: profile.userId },
-      select: { name: true },
-    });
 
     // Get reviews from PostgreSQL
     const reviews = await prisma.review.findMany({
@@ -185,9 +182,7 @@ export class TutorService {
     // Calculate average rating and total reviews
     const totalReviews = reviews.length;
     const averageRating =
-      totalReviews > 0
-        ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-        : 0;
+      totalReviews > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews : 0;
 
     // Update profile with latest rating stats if they've changed
     if (profile.rating !== averageRating || profile.totalReviews !== totalReviews) {
@@ -256,7 +251,7 @@ export class TutorService {
 
   async setAvailability(
     userId: string,
-    availability: Array<{ dayOfWeek: number; startTime: string; endTime: string }>
+    availability: Array<{ dayOfWeek: number; startTime: string; endTime: string }>,
   ): Promise<TutorProfileResponseDto> {
     const profile = await TutorProfile.findOne({ userId });
     if (!profile) {
@@ -273,7 +268,9 @@ export class TutorService {
     return this.mapToResponseDto(profile);
   }
 
-  async getAvailability(userId: string): Promise<Array<{ dayOfWeek: number; startTime: string; endTime: string }>> {
+  async getAvailability(
+    userId: string,
+  ): Promise<Array<{ dayOfWeek: number; startTime: string; endTime: string }>> {
     const profile = await TutorProfile.findOne({ userId });
     if (!profile) {
       throw new Error('Tutor profile not found');
@@ -284,7 +281,7 @@ export class TutorService {
 
   async addAvailabilitySlot(
     userId: string,
-    slot: { dayOfWeek: number; startTime: string; endTime: string }
+    slot: { dayOfWeek: number; startTime: string; endTime: string },
   ): Promise<TutorProfileResponseDto> {
     const profile = await TutorProfile.findOne({ userId });
     if (!profile) {
@@ -298,7 +295,7 @@ export class TutorService {
     const hasOverlap = profile.availability.some(
       (existing) =>
         existing.dayOfWeek === slot.dayOfWeek &&
-        this.timeSlotsOverlap(existing.startTime, existing.endTime, slot.startTime, slot.endTime)
+        this.timeSlotsOverlap(existing.startTime, existing.endTime, slot.startTime, slot.endTime),
     );
 
     if (hasOverlap) {
@@ -315,7 +312,7 @@ export class TutorService {
   async removeAvailabilitySlot(
     userId: string,
     dayOfWeek: number,
-    startTime: string
+    startTime: string,
   ): Promise<TutorProfileResponseDto> {
     const profile = await TutorProfile.findOne({ userId });
     if (!profile) {
@@ -325,7 +322,7 @@ export class TutorService {
     // Find and remove the slot
     const initialLength = profile.availability.length;
     profile.availability = profile.availability.filter(
-      (slot) => !(slot.dayOfWeek === dayOfWeek && slot.startTime === startTime)
+      (slot) => !(slot.dayOfWeek === dayOfWeek && slot.startTime === startTime),
     );
 
     if (profile.availability.length === initialLength) {
@@ -338,7 +335,7 @@ export class TutorService {
   }
 
   private validateAvailabilitySlots(
-    slots: Array<{ dayOfWeek: number; startTime: string; endTime: string }>
+    slots: Array<{ dayOfWeek: number; startTime: string; endTime: string }>,
   ): void {
     for (const slot of slots) {
       // Validate day of week
@@ -364,12 +361,7 @@ export class TutorService {
     }
   }
 
-  private timeSlotsOverlap(
-    start1: string,
-    end1: string,
-    start2: string,
-    end2: string
-  ): boolean {
+  private timeSlotsOverlap(start1: string, end1: string, start2: string, end2: string): boolean {
     const [start1Hour, start1Min] = start1.split(':').map(Number);
     const [end1Hour, end1Min] = end1.split(':').map(Number);
     const [start2Hour, start2Min] = start2.split(':').map(Number);
@@ -383,15 +375,19 @@ export class TutorService {
     return start1Minutes < end2Minutes && start2Minutes < end1Minutes;
   }
 
-  async searchTutors(params: {
-    latitude: number;
-    longitude: number;
-    radius: number;
-    subject?: string;
-    minRate?: number;
-    maxRate?: number;
-    minRating?: number;
-  }, page: number = 1, limit: number = 20): Promise<{ data: TutorProfileResponseDto[]; total: number; page: number; limit: number }> {
+  async searchTutors(
+    params: {
+      latitude: number;
+      longitude: number;
+      radius: number;
+      subject?: string;
+      minRate?: number;
+      maxRate?: number;
+      minRating?: number;
+    },
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<{ data: TutorProfileResponseDto[]; total: number; page: number; limit: number }> {
     const { latitude, longitude, radius, subject, minRate, maxRate, minRating } = params;
 
     // Build query
@@ -439,7 +435,7 @@ export class TutorService {
           latitude,
           longitude,
           profile.location.coordinates[1],
-          profile.location.coordinates[0]
+          profile.location.coordinates[0],
         );
 
         const dto = await this.mapToResponseDtoWithName(profile);
@@ -448,7 +444,7 @@ export class TutorService {
           ...dto,
           distance: Math.round(distance * 100) / 100, // Round to 2 decimal places
         };
-      })
+      }),
     );
 
     return { data, total, page, limit };
@@ -462,7 +458,7 @@ export class TutorService {
 
     // Map to response DTOs with user names
     const responseDtos = await Promise.all(
-      profiles.map(async (profile) => this.mapToResponseDtoWithName(profile))
+      profiles.map(async (profile) => this.mapToResponseDtoWithName(profile)),
     );
 
     return responseDtos;
@@ -470,7 +466,7 @@ export class TutorService {
 
   private mapToResponseDto(profile: ITutorProfile): TutorProfileResponseDto {
     return {
-      id: profile._id.toString(),
+      id: (profile._id as any).toString(),
       userId: profile.userId,
       bio: profile.bio,
       qualifications: profile.qualifications,
@@ -486,20 +482,23 @@ export class TutorService {
     };
   }
 
-  private async mapToResponseDtoWithName(profile: ITutorProfile, userId?: string): Promise<TutorProfileResponseDto> {
+  private async mapToResponseDtoWithName(
+    profile: ITutorProfile,
+    userId?: string,
+  ): Promise<TutorProfileResponseDto> {
     const dto = this.mapToResponseDto(profile);
-    
+
     // Fetch user name from Prisma
     const userID = userId || profile.userId;
     const user = await prisma.user.findUnique({
       where: { id: userID },
       select: { name: true },
     });
-    
+
     if (user) {
       dto.name = user.name;
     }
-    
+
     return dto;
   }
 }
