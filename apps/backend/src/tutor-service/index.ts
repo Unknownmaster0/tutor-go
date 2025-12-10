@@ -48,7 +48,8 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/tutors', createTutorRoutes(tutorController));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use('/tutors', createTutorRoutes(tutorController) as any);
 
 // 404 handler
 app.use(notFoundHandler);

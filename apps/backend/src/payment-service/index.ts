@@ -48,7 +48,8 @@ app.get('/health', (req, res) => {
 });
 
 // Payment API Routes
-app.use('/payments', createPaymentRoutes(paymentController));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use('/payments', createPaymentRoutes(paymentController) as any);
 
 // 404 handler
 app.use(notFoundHandler);

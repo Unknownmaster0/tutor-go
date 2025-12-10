@@ -41,7 +41,8 @@ app.get('/health', (req, res) => {
 });
 
 // Booking API Routes
-app.use('/bookings', createBookingRoutes(bookingController));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use('/bookings', createBookingRoutes(bookingController) as any);
 
 // 404 handler
 app.use(notFoundHandler);
