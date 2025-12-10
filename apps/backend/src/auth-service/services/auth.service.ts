@@ -186,7 +186,7 @@ export class AuthService {
 
   private generateAccessToken(user: User): string {
     const options: SignOptions = {
-      expiresIn: this.JWT_EXPIRES_IN as string | number,
+      expiresIn: this.JWT_EXPIRES_IN,
     };
     return jwt.sign(
       {
@@ -201,7 +201,7 @@ export class AuthService {
 
   private generateRefreshToken(user: User): string {
     const options: SignOptions = {
-      expiresIn: this.JWT_REFRESH_EXPIRES_IN as string | number,
+      expiresIn: this.JWT_REFRESH_EXPIRES_IN,
     };
     return jwt.sign(
       {
