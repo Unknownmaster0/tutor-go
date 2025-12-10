@@ -130,9 +130,7 @@ describe('VideoUpload', () => {
 
   it('handles upload error', async () => {
     const mockOnUpdate = vi.fn();
-    const mockAxiosPost = vi
-      .mocked(axios.post)
-      .mockRejectedValue({ response: { data: { message: 'Upload failed' } } });
+    vi.mocked(axios.post).mockRejectedValue({ response: { data: { message: 'Upload failed' } } });
 
     render(<VideoUpload profile={mockProfile} onUpdate={mockOnUpdate} />);
 

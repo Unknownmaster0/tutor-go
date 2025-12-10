@@ -12,10 +12,10 @@ interface TutorMapProps {
   userLocation?: { latitude: number; longitude: number };
 }
 
-export function TutorMap({ 
-  tutors, 
-  center, 
-  onMarkerClick, 
+export function TutorMap({
+  tutors,
+  center,
+  onMarkerClick,
   className = '',
   userLocation,
 }: TutorMapProps) {
@@ -28,9 +28,11 @@ export function TutorMap({
   useEffect(() => {
     // Check if Google Maps API key is available
     const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    
+
     if (!googleMapsApiKey) {
-      setMapError('Map configuration is missing. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.');
+      setMapError(
+        'Map configuration is missing. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.',
+      );
       return;
     }
 
@@ -58,7 +60,7 @@ export function TutorMap({
       });
 
       // Clear previous markers
-      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
 
       if (userMarkerRef.current) {
@@ -82,7 +84,8 @@ export function TutorMap({
         });
 
         const userInfoWindow = new google.maps.InfoWindow({
-          content: '<div style="padding: 8px;"><h3 style="font-weight: bold; margin-bottom: 4px;">Your Location</h3></div>',
+          content:
+            '<div style="padding: 8px;"><h3 style="font-weight: bold; margin-bottom: 4px;">Your Location</h3></div>',
         });
 
         userMarker.addListener('click', () => {
@@ -103,8 +106,8 @@ export function TutorMap({
             map: mapRef.current,
             title: tutor.name,
             icon: {
-              path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
-              scale: 5,
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
               fillColor: '#EF4444', // Red
               fillOpacity: 1,
               strokeColor: '#B91C1C',
@@ -120,7 +123,7 @@ export function TutorMap({
               userLocation.latitude,
               userLocation.longitude,
               lat,
-              lng
+              lng,
             );
             isNearby = distance <= 5; // e.g., within 5km is considered 'nearby'
             distanceHtml = `<p style="font-size: 14px; color: ${isNearby ? '#10B981' : '#EF4444'}; font-weight: 600;">📍 ${formatDistance(distance)}${isNearby ? ' (Near you)' : ''}</p>`;
@@ -153,7 +156,7 @@ export function TutorMap({
       // Fit map to show all markers
       if (tutors.length > 0 && mapRef.current) {
         const bounds = new google.maps.LatLngBounds();
-        
+
         // Add user location to bounds if available
         if (userLocation) {
           bounds.extend({ lat: userLocation.latitude, lng: userLocation.longitude });
@@ -181,7 +184,7 @@ export function TutorMap({
 
     return () => {
       // Cleanup: Remove markers
-      markersRef.current.forEach(marker => marker.setMap(null));
+      markersRef.current.forEach((marker) => marker.setMap(null));
       if (userMarkerRef.current) {
         userMarkerRef.current.setMap(null);
       }
@@ -192,8 +195,18 @@ export function TutorMap({
     return (
       <div className={`bg-neutral-100 rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center p-8">
-          <svg className="w-16 h-16 mx-auto text-neutral-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          <svg
+            className="w-16 h-16 mx-auto text-neutral-400 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+            />
           </svg>
           <p className="text-neutral-600">{mapError}</p>
         </div>
@@ -201,7 +214,5 @@ export function TutorMap({
     );
   }
 
-  return (
-    <div ref={mapContainerRef} className={className} />
-  );
+  return <div ref={mapContainerRef} className={className} />;
 }

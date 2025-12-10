@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { VideoPlayer } from '@/components/video/video-player';
 
@@ -30,7 +30,7 @@ describe('VideoPlayer', () => {
 
     const video = document.querySelector('video');
     expect(video).toBeInTheDocument();
-    
+
     // Check for source element instead of video src attribute
     const source = document.querySelector('source');
     expect(source).toHaveAttribute('src', mockUrl);

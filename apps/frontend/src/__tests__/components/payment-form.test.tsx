@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PaymentForm from '@/components/payment/payment-form';
 
@@ -44,7 +44,9 @@ describe('PaymentForm', () => {
   it('displays security notice', () => {
     render(<PaymentForm {...defaultProps} />);
 
-    expect(screen.getByText(/Your payment information is secure and encrypted/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Your payment information is secure and encrypted/i),
+    ).toBeInTheDocument();
   });
 
   it('shows cancel button when onCancel is provided', () => {
@@ -173,7 +175,7 @@ describe('PaymentForm', () => {
     render(<PaymentForm {...defaultProps} />);
 
     const submitButton = screen.getByRole('button', { name: /Pay \$50.00/i });
-    
+
     // First submission with error
     await user.click(submitButton);
     await waitFor(() => {

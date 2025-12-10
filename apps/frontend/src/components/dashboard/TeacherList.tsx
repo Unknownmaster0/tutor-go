@@ -62,7 +62,7 @@ export const TeacherList: React.FC<TeacherListProps> = ({
     return (
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-2xl">
-          <SkeletonLoader variant="input" />
+          <SkeletonLoader variant="rectangular" />
           <div className="w-full sm:w-32 h-10 bg-neutral-200 rounded-lg animate-pulse" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -177,7 +177,11 @@ export const TeacherList: React.FC<TeacherListProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-lg shadow-soft" role="status" aria-live="polite">
+        <div
+          className="text-center py-12 bg-white rounded-lg shadow-soft"
+          role="status"
+          aria-live="polite"
+        >
           <svg
             className="mx-auto h-12 w-12 text-neutral-400"
             fill="none"

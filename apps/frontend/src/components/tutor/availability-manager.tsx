@@ -19,8 +19,9 @@ const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 
 export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerProps) {
   const [availability, setAvailability] = useState<AvailabilitySlot[]>(
-    (profile as any).availability || []
+    (profile as any).availability || [],
   );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [bookedSlots, setBookedSlots] = useState<AvailabilitySlot[]>([]);
   const [newSlot, setNewSlot] = useState({
     dayOfWeek: 1,
@@ -43,7 +44,7 @@ export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerPr
         slot.dayOfWeek === newSlot.dayOfWeek &&
         ((newSlot.startTime >= slot.startTime && newSlot.startTime < slot.endTime) ||
           (newSlot.endTime > slot.startTime && newSlot.endTime <= slot.endTime) ||
-          (newSlot.startTime <= slot.startTime && newSlot.endTime >= slot.endTime))
+          (newSlot.startTime <= slot.startTime && newSlot.endTime >= slot.endTime)),
     );
 
     if (overlapping) {
@@ -57,13 +58,13 @@ export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerPr
 
   const handleRemoveSlot = (index: number) => {
     const slotToRemove = availability[index];
-    
+
     // Check if slot is booked
     const isBooked = bookedSlots.some(
       (booked) =>
         booked.dayOfWeek === slotToRemove.dayOfWeek &&
         booked.startTime === slotToRemove.startTime &&
-        booked.endTime === slotToRemove.endTime
+        booked.endTime === slotToRemove.endTime,
     );
 
     if (isBooked) {
@@ -114,7 +115,7 @@ export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerPr
       (booked) =>
         booked.dayOfWeek === slot.dayOfWeek &&
         booked.startTime === slot.startTime &&
-        booked.endTime === slot.endTime
+        booked.endTime === slot.endTime,
     );
   };
 
@@ -204,7 +205,7 @@ export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerPr
         {/* Current Availability */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Availability</h3>
-          
+
           {availability.length > 0 ? (
             <div className="space-y-4">
               {groupedAvailability.map(
@@ -218,7 +219,7 @@ export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerPr
                             (s) =>
                               s.dayOfWeek === slot.dayOfWeek &&
                               s.startTime === slot.startTime &&
-                              s.endTime === slot.endTime
+                              s.endTime === slot.endTime,
                           );
                           const booked = isSlotBooked(slot);
 
@@ -251,7 +252,7 @@ export function AvailabilityManager({ profile, onUpdate }: AvailabilityManagerPr
                         })}
                       </div>
                     </div>
-                  )
+                  ),
               )}
             </div>
           ) : (

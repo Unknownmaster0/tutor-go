@@ -8,7 +8,7 @@ vi.mock('@/lib/socket-client');
 
 describe('useSocket', () => {
   let mockSocket: Partial<Socket>;
-  let eventHandlers: Map<string, Function>;
+  let eventHandlers: Map<string, (...args: any[]) => void>;
 
   beforeEach(() => {
     eventHandlers = new Map();
@@ -17,7 +17,7 @@ describe('useSocket', () => {
       connected: false,
       connect: vi.fn(),
       disconnect: vi.fn(),
-      on: vi.fn((event: string, handler: Function) => {
+      on: vi.fn((event: string, handler: (...args: any[]) => void) => {
         eventHandlers.set(event, handler);
         return mockSocket as Socket;
       }),

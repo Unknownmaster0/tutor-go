@@ -113,7 +113,7 @@ export const useChat = (options: UseChatOptions): UseChatReturn => {
   // Mark message as read
   const markAsRead = useCallback(async (messageId: string) => {
     try {
-      await axios.patch(`${API_BASE_URL}/chat/messages/${messageId}/read`);
+      await apiClient.patch(`/chat/messages/${messageId}/read`);
       setMessages((prev) =>
         prev.map((msg) => (msg.id === messageId ? { ...msg, read: true } : msg)),
       );

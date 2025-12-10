@@ -10,14 +10,14 @@ vi.mock('axios');
 describe('useChat', () => {
   let mockSocket: any;
   let mockUseSocket: any;
-  let eventHandlers: Map<string, Function>;
+  let eventHandlers: Map<string, (...args: any[]) => void>;
 
   beforeEach(() => {
     eventHandlers = new Map();
 
     mockSocket = {
       emit: vi.fn(),
-      on: vi.fn((event: string, handler: Function) => {
+      on: vi.fn((event: string, handler: (...args: any[]) => void) => {
         eventHandlers.set(event, handler);
       }),
       off: vi.fn(),
@@ -29,7 +29,7 @@ describe('useChat', () => {
       connect: vi.fn(),
       disconnect: vi.fn(),
       emit: vi.fn(),
-      on: vi.fn((event: string, handler: Function) => {
+      on: vi.fn((event: string, handler: (...args: any[]) => void) => {
         eventHandlers.set(event, handler);
       }),
       off: vi.fn(),
@@ -46,9 +46,7 @@ describe('useChat', () => {
 
   describe('initialization', () => {
     it('should initialize with default values', () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       expect(result.current.conversations).toEqual([]);
       expect(result.current.messages).toEqual([]);
@@ -63,7 +61,7 @@ describe('useChat', () => {
       expect(useSocketModule.useSocket).toHaveBeenCalledWith(
         expect.objectContaining({
           autoConnect: true,
-        })
+        }),
       );
     });
   });
@@ -82,9 +80,7 @@ describe('useChat', () => {
 
       vi.mocked(axios.get).mockResolvedValueOnce({ data: mockConversations });
 
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       await act(async () => {
         await result.current.loadConversations();
@@ -103,9 +99,7 @@ describe('useChat', () => {
         response: { data: { message: errorMessage } },
       });
 
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       await act(async () => {
         await result.current.loadConversations();
@@ -134,9 +128,7 @@ describe('useChat', () => {
 
       vi.mocked(axios.get).mockResolvedValueOnce({ data: mockMessages });
 
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       await act(async () => {
         await result.current.loadMessages('conv-1');
@@ -151,9 +143,7 @@ describe('useChat', () => {
 
   describe('sendMessage', () => {
     it('should send message when connected', () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       act(() => {
         result.current.sendMessage('conv-1', 'user-2', 'Hello');
@@ -166,14 +156,12 @@ describe('useChat', () => {
           senderId: 'user-1',
           receiverId: 'user-2',
           message: 'Hello',
-        })
+        }),
       );
     });
 
     it('should add optimistic message to state', () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       act(() => {
         result.current.sendMessage('conv-1', 'user-2', 'Hello');
@@ -187,9 +175,7 @@ describe('useChat', () => {
     it('should set error when not connected', () => {
       mockUseSocket.isConnected = false;
 
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       act(() => {
         result.current.sendMessage('conv-1', 'user-2', 'Hello');
@@ -201,9 +187,7 @@ describe('useChat', () => {
 
   describe('markAsRead', () => {
     it('should mark message as read', async () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       // Add a message first
       act(() => {
@@ -225,9 +209,7 @@ describe('useChat', () => {
 
   describe('real-time updates', () => {
     it('should handle incoming messages', async () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       const incomingMessage = {
         id: 'msg-1',
@@ -250,9 +232,7 @@ describe('useChat', () => {
     });
 
     it('should update user status', async () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       const userStatus = {
         userId: 'user-2',
@@ -272,9 +252,7 @@ describe('useChat', () => {
     });
 
     it('should handle message read event', async () => {
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       // Add a message first
       act(() => {
@@ -316,9 +294,7 @@ describe('useChat', () => {
 
       vi.mocked(axios.get).mockResolvedValueOnce({ data: mockConversations });
 
-      const { result } = renderHook(() =>
-        useChat({ userId: 'user-1', autoConnect: false })
-      );
+      const { result } = renderHook(() => useChat({ userId: 'user-1', autoConnect: false }));
 
       await act(async () => {
         await result.current.loadConversations();
