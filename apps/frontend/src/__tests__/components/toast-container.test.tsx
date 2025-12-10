@@ -84,9 +84,12 @@ describe('ToastContainer', () => {
     });
 
     // Toast should auto-close after 5 seconds + 300ms animation
-    await waitFor(() => {
-      expect(screen.queryByTestId('toast-notification')).not.toBeInTheDocument();
-    }, { timeout: 7000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByTestId('toast-notification')).not.toBeInTheDocument();
+      },
+      { timeout: 7000 },
+    );
   }, 10000);
 
   it('exposes addToast globally', () => {
@@ -108,7 +111,7 @@ describe('ToastContainer', () => {
 
   it('handles showToast when window is undefined', () => {
     const originalWindow = global.window;
-    // @ts-ignore
+    // @ts-expect-error global object manipulation
     delete global.window;
 
     expect(() => showToast(mockNotification)).not.toThrow();

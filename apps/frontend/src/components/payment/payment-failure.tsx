@@ -26,7 +26,7 @@ export default function PaymentFailure({ error, onRetry, onCancel }: PaymentFail
           </svg>
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Payment Failed</h2>
-        <p className="text-gray-600">We couldn't process your payment</p>
+        <p className="text-gray-600">We couldn&apos;t process your payment</p>
       </div>
 
       <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">

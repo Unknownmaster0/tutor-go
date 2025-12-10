@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { Socket } from 'socket.io-client';
-import { createSocketConnection, disconnectSocket, connectSocket, getSocket } from '@/lib/socket-client';
+import { createSocketConnection, disconnectSocket, connectSocket } from '@/lib/socket-client';
 
 export interface UseSocketOptions {
   url: string;
@@ -67,13 +67,13 @@ export const useSocket = (options: UseSocketOptions): UseSocketReturn => {
       socketInstance.off('disconnect', handleDisconnect);
       socketInstance.off('error', handleError);
       socketInstance.off('reconnect', handleReconnect);
-      
+
       // Clean up all registered listeners
       listenersRef.current.forEach((handler, event) => {
         socketInstance.off(event, handler);
       });
       listenersRef.current.clear();
-      
+
       disconnectSocket();
     };
   }, [options.url, options.autoConnect]);
@@ -87,27 +87,36 @@ export const useSocket = (options: UseSocketOptions): UseSocketReturn => {
     setIsConnected(false);
   }, []);
 
-  const emit = useCallback((event: string, data: any) => {
-    socket?.emit(event, data);
-  }, [socket]);
+  const emit = useCallback(
+    (event: string, data: any) => {
+      socket?.emit(event, data);
+    },
+    [socket],
+  );
 
-  const on = useCallback((event: string, handler: (...args: any[]) => void) => {
-    if (socket) {
-      socket.on(event, handler);
-      listenersRef.current.set(event, handler);
-    }
-  }, [socket]);
-
-  const off = useCallback((event: string, handler?: (...args: any[]) => void) => {
-    if (socket) {
-      if (handler) {
-        socket.off(event, handler);
-      } else {
-        socket.off(event);
+  const on = useCallback(
+    (event: string, handler: (...args: any[]) => void) => {
+      if (socket) {
+        socket.on(event, handler);
+        listenersRef.current.set(event, handler);
       }
-      listenersRef.current.delete(event);
-    }
-  }, [socket]);
+    },
+    [socket],
+  );
+
+  const off = useCallback(
+    (event: string, handler?: (...args: any[]) => void) => {
+      if (socket) {
+        if (handler) {
+          socket.off(event, handler);
+        } else {
+          socket.off(event);
+        }
+        listenersRef.current.delete(event);
+      }
+    },
+    [socket],
+  );
 
   return {
     socket,

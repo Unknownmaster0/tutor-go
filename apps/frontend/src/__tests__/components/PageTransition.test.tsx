@@ -7,8 +7,6 @@ vi.mock('next/navigation', () => ({
   usePathname: vi.fn(() => '/test-path'),
 }));
 
-import { usePathname } from 'next/navigation';
-
 describe('PageTransition Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();

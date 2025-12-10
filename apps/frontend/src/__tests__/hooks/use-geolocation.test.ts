@@ -9,7 +9,7 @@ describe('useGeolocation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // @ts-ignore
+    // @ts-expect-error mock geolocation
     global.navigator.geolocation = mockGeolocation;
   });
 
@@ -36,7 +36,7 @@ describe('useGeolocation', () => {
     const mockPosition = {
       coords: {
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
       },
     };
 
@@ -51,7 +51,7 @@ describe('useGeolocation', () => {
     });
 
     expect(result.current.latitude).toBe(40.7128);
-    expect(result.current.longitude).toBe(-74.0060);
+    expect(result.current.longitude).toBe(-74.006);
     expect(result.current.error).toBeNull();
     expect(result.current.loading).toBe(false);
   });
@@ -82,7 +82,7 @@ describe('useGeolocation', () => {
   });
 
   it('handles unsupported geolocation', () => {
-    // @ts-ignore
+    // @ts-expect-error further testing
     global.navigator.geolocation = undefined;
 
     const { result } = renderHook(() => useGeolocation());
