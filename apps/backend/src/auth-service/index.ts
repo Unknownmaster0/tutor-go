@@ -48,7 +48,9 @@ app.get('/health', (req, res) => {
 });
 
 // Auth routes
-app.use('/auth', createAuthRoutes(authController));
+// Cast to `any` to avoid TypeScript overload resolution issues
+// (runtime behavior unchanged: `createAuthRoutes` returns an Express Router)
+app.use('/auth', createAuthRoutes(authController) as any);
 
 // 404 handler
 app.use(notFoundHandler);

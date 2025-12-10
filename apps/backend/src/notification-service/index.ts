@@ -45,7 +45,8 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/notifications', createNotificationRoutes(notificationController));
+// Cast to `any` to avoid TypeScript overload resolution issues
+app.use('/notifications', createNotificationRoutes(notificationController) as any);
 
 // 404 handler
 app.use(notFoundHandler);
