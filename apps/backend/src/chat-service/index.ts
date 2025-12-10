@@ -76,7 +76,8 @@ app.get('/chat/health', (req, res) => {
 // API Routes
 import chatRoutes from './routes/chat.routes';
 
-app.use('/chat', chatRoutes);
+// Cast to `any` to avoid TypeScript overload resolution issues
+app.use('/chat', chatRoutes as any);
 
 // Health check route
 app.get('/chat/status', (req, res) => {
