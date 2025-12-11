@@ -286,7 +286,7 @@ export default function SearchPageContent() {
                       : 'Showing tutors in your search area'}
                   </p>
                 </div>
-                <div className="relative bg-gray-200 w-full" style={{ minHeight: '400px' }}>
+                <div className="relative bg-gray-200 w-full h-[500px]">
                   {tutors.length > 0 ? (
                     <TutorMap
                       tutors={tutors}
