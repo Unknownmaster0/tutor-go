@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface AvailabilitySlot {
   dayOfWeek: number; // 0-6 (Sunday-Saturday)
   startTime: string; // "09:00"
@@ -16,9 +14,11 @@ interface AvailabilityCalendarProps {
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export function AvailabilityCalendar({ availability, onSlotSelect, className = '' }: AvailabilityCalendarProps) {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
+export function AvailabilityCalendar({
+  availability,
+  onSlotSelect,
+  className = '',
+}: AvailabilityCalendarProps) {
   // Get current week dates
   const getWeekDates = () => {
     const today = new Date();
@@ -38,7 +38,7 @@ export function AvailabilityCalendar({ availability, onSlotSelect, className = '
 
   // Get availability for a specific day
   const getAvailabilityForDay = (dayOfWeek: number) => {
-    return availability.filter(slot => slot.dayOfWeek === dayOfWeek);
+    return availability.filter((slot) => slot.dayOfWeek === dayOfWeek);
   };
 
   const formatTime = (time: string) => {
@@ -81,18 +81,20 @@ export function AvailabilityCalendar({ availability, onSlotSelect, className = '
                   isToday(date)
                     ? 'border-blue-500 bg-blue-50'
                     : past
-                    ? 'border-gray-200 bg-gray-50 opacity-50'
-                    : hasAvailability
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-gray-200 bg-gray-50'
+                      ? 'border-gray-200 bg-gray-50 opacity-50'
+                      : hasAvailability
+                        ? 'border-green-200 bg-green-50'
+                        : 'border-gray-200 bg-gray-50'
                 }`}
               >
                 <div className="text-xs font-medium text-gray-600">
                   {DAYS[date.getDay()].slice(0, 3)}
                 </div>
-                <div className={`text-lg font-semibold ${
-                  isToday(date) ? 'text-blue-600' : 'text-gray-900'
-                }`}>
+                <div
+                  className={`text-lg font-semibold ${
+                    isToday(date) ? 'text-blue-600' : 'text-gray-900'
+                  }`}
+                >
                   {date.getDate()}
                 </div>
                 {hasAvailability && !past && (
@@ -106,10 +108,10 @@ export function AvailabilityCalendar({ availability, onSlotSelect, className = '
         {/* Time Slots */}
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Available Time Slots</h4>
-          
+
           {DAYS.map((day, dayIndex) => {
             const daySlots = getAvailabilityForDay(dayIndex);
-            
+
             if (daySlots.length === 0) return null;
 
             return (
@@ -138,8 +140,18 @@ export function AvailabilityCalendar({ availability, onSlotSelect, className = '
 
           {availability.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              <svg className="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-12 h-12 mx-auto mb-2 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
               <p>No availability set yet</p>
             </div>

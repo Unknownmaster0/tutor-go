@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { PrismaClient, User } from '@prisma/client';
-import { RegisterDto, AuthResponseDto, RegisterResponseDto } from '../dto';
+import { RegisterDto, AuthResponseDto } from '../dto';
 import { RedisService } from './redis.service';
 import { EmailService } from './email.service';
 
@@ -185,6 +185,9 @@ export class AuthService {
   }
 
   private generateAccessToken(user: User): string {
+    const options: SignOptions = {
+      expiresIn: this.JWT_EXPIRES_IN,
+    };
     return jwt.sign(
       {
         userId: user.id,
@@ -192,11 +195,14 @@ export class AuthService {
         role: user.role,
       },
       this.JWT_SECRET,
-      { expiresIn: this.JWT_EXPIRES_IN },
+      options,
     );
   }
 
   private generateRefreshToken(user: User): string {
+    const options: SignOptions = {
+      expiresIn: this.JWT_REFRESH_EXPIRES_IN,
+    };
     return jwt.sign(
       {
         userId: user.id,
@@ -204,14 +210,15 @@ export class AuthService {
         role: user.role,
       },
       this.JWT_REFRESH_SECRET,
-      { expiresIn: this.JWT_REFRESH_EXPIRES_IN },
+      options,
     );
   }
 
   private generateResetToken(): string {
-    return jwt.sign({ purpose: 'password-reset', timestamp: Date.now() }, this.JWT_SECRET, {
+    const options: SignOptions = {
       expiresIn: '1h',
-    });
+    };
+    return jwt.sign({ purpose: 'password-reset', timestamp: Date.now() }, this.JWT_SECRET, options);
   }
 
   async verifyToken(token: string): Promise<{ userId: string; email: string; role: string }> {

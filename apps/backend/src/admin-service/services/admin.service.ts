@@ -337,7 +337,7 @@ export class AdminService {
     contentId: string,
     type: 'review' | 'message',
     action: ModerationActionDto,
-    moderatorId: string,
+    _moderatorId: string,
   ): Promise<void> {
     try {
       this.logger.log(`Moderating ${type} ${contentId} with action ${action.action}`);

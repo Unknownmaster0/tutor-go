@@ -16,7 +16,7 @@ export const createTutorRoutes = (tutorController: TutorController): Router => {
 
   // Public routes
   router.get('/search', searchTutorsValidation, asyncHandler(tutorController.searchTutors));
-  
+  router.get('/top-rated', asyncHandler(tutorController.getTopRatedTutors));
 
   // Protected routes - require authentication
   router.post('/profile', authenticateToken, createTutorProfileValidation, asyncHandler(tutorController.createProfile));

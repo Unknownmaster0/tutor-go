@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { AuthService } from '../services';
-import { ApiResponse, asyncHandler } from '../../shared';
+import { ApiResponse } from '../../shared';
 import {
   RegisterDto,
   LoginDto,

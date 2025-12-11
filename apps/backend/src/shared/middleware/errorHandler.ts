@@ -5,12 +5,7 @@ export interface ApiError extends Error {
   isOperational?: boolean;
 }
 
-export const errorHandler = (
-  err: ApiError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (err: ApiError, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
 

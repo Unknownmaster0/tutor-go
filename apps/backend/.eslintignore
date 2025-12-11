@@ -1,0 +1,8 @@
+# Test files
+src/**/__tests__/**
+src/**/*.spec.ts
+src/**/*.test.ts
+
+# Build output
+dist/
+node_modules/

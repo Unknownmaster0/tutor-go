@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { TeacherList } from '@/components/dashboard/TeacherList';
 import { Teacher } from '@/types/dashboard.types';
 
@@ -129,7 +129,9 @@ describe('TeacherList', () => {
     });
 
     expect(screen.getByText('No teachers found')).toBeInTheDocument();
-    expect(screen.getByText("Try adjusting your search to find what you're looking for.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Try adjusting your search to find what you're looking for."),
+    ).toBeInTheDocument();
   });
 
   it('shows clear button when search has value', () => {
@@ -145,7 +147,9 @@ describe('TeacherList', () => {
   it('clears search when clear button is clicked', async () => {
     render(<TeacherList teachers={mockTeachers} />);
 
-    const searchInput = screen.getByPlaceholderText('Search by name or subject...') as HTMLInputElement;
+    const searchInput = screen.getByPlaceholderText(
+      'Search by name or subject...',
+    ) as HTMLInputElement;
     fireEvent.change(searchInput, { target: { value: 'Jane' } });
 
     expect(searchInput.value).toBe('Jane');
@@ -241,7 +245,7 @@ describe('TeacherList', () => {
     render(<TeacherList teachers={mockTeachers} />);
 
     const searchInput = screen.getByPlaceholderText('Search by name or subject...');
-    
+
     // Rapid fire multiple changes
     await act(async () => {
       fireEvent.change(searchInput, { target: { value: 'J' } });

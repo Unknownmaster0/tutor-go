@@ -64,7 +64,8 @@ async function initializeServices() {
   const reviewController = new ReviewController(reviewService);
 
   // Routes
-  app.use('/reviews', createReviewRoutes(reviewController));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app.use('/reviews', createReviewRoutes(reviewController) as any);
 
   // Health check
   app.get('/health', (req, res) => {
@@ -72,13 +73,15 @@ async function initializeServices() {
   });
 
   // Error handling middleware
-  app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error('Error:', err);
-    res.status(500).json({
-      error: 'Internal server error',
-      message: process.env.NODE_ENV === 'development' ? err.message : undefined,
-    });
-  });
+  app.use(
+    (err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      console.error('Error:', err);
+      res.status(500).json({
+        error: 'Internal server error',
+        message: process.env.NODE_ENV === 'development' ? err.message : undefined,
+      });
+    },
+  );
 }
 
 // Start server

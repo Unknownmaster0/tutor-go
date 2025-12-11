@@ -48,7 +48,8 @@ app.get('/health', (req, res) => {
 });
 
 // Auth routes
-app.use('/auth', createAuthRoutes(authController));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use('/auth', createAuthRoutes(authController) as any);
 
 // 404 handler
 app.use(notFoundHandler);

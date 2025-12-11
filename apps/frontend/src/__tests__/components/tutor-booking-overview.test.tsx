@@ -88,8 +88,8 @@ describe('TutorBookingOverview', () => {
 
   it('displays earnings and session statistics', async () => {
     vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: mockUpcomingBookings })
-      .mockResolvedValueOnce({ bookings: [...mockUpcomingBookings, ...mockCompletedBookings] });
+      .mockResolvedValueOnce(mockUpcomingBookings)
+      .mockResolvedValueOnce([...mockUpcomingBookings, ...mockCompletedBookings]);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 
@@ -105,8 +105,8 @@ describe('TutorBookingOverview', () => {
 
   it('displays upcoming sessions', async () => {
     vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: mockUpcomingBookings })
-      .mockResolvedValueOnce({ bookings: [...mockUpcomingBookings, ...mockCompletedBookings] });
+      .mockResolvedValueOnce(mockUpcomingBookings)
+      .mockResolvedValueOnce([...mockUpcomingBookings, ...mockCompletedBookings]);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 
@@ -119,9 +119,7 @@ describe('TutorBookingOverview', () => {
   });
 
   it('shows empty state when no upcoming sessions', async () => {
-    vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: [] })
-      .mockResolvedValueOnce({ bookings: mockCompletedBookings });
+    vi.mocked(apiClient.get).mockResolvedValueOnce([]).mockResolvedValueOnce(mockCompletedBookings);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 
@@ -158,8 +156,8 @@ describe('TutorBookingOverview', () => {
     };
 
     vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: [] })
-      .mockResolvedValueOnce({ bookings: [thisMonthBooking, ...mockCompletedBookings] });
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([thisMonthBooking, ...mockCompletedBookings]);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 
@@ -173,8 +171,8 @@ describe('TutorBookingOverview', () => {
 
   it('displays view all link', async () => {
     vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: mockUpcomingBookings })
-      .mockResolvedValueOnce({ bookings: [...mockUpcomingBookings, ...mockCompletedBookings] });
+      .mockResolvedValueOnce(mockUpcomingBookings)
+      .mockResolvedValueOnce([...mockUpcomingBookings, ...mockCompletedBookings]);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 
@@ -187,8 +185,8 @@ describe('TutorBookingOverview', () => {
 
   it('displays view button for each booking', async () => {
     vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: mockUpcomingBookings })
-      .mockResolvedValueOnce({ bookings: [...mockUpcomingBookings, ...mockCompletedBookings] });
+      .mockResolvedValueOnce(mockUpcomingBookings)
+      .mockResolvedValueOnce([...mockUpcomingBookings, ...mockCompletedBookings]);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 
@@ -208,8 +206,8 @@ describe('TutorBookingOverview', () => {
 
   it('formats dates and times correctly', async () => {
     vi.mocked(apiClient.get)
-      .mockResolvedValueOnce({ bookings: mockUpcomingBookings })
-      .mockResolvedValueOnce({ bookings: [...mockUpcomingBookings, ...mockCompletedBookings] });
+      .mockResolvedValueOnce(mockUpcomingBookings)
+      .mockResolvedValueOnce([...mockUpcomingBookings, ...mockCompletedBookings]);
 
     render(<TutorBookingOverview tutorId="tutor1" />);
 

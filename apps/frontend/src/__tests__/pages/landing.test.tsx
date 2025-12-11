@@ -13,7 +13,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock the SearchBar component
 vi.mock('@/components/search/search-bar', () => ({
-  SearchBar: ({ onSearch }: { onSearch: Function }) => (
+  SearchBar: ({ onSearch }: any) => (
     <div data-testid="search-bar">
       <button onClick={() => onSearch('Test Location')}>Search</button>
     </div>

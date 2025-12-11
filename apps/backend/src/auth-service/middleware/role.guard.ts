@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { ApiResponse } from '../../shared';
 import { AuthRequest } from './auth.middleware';
 
-export const requireRole = (...allowedRoles: string[]) => {
+export const requireRole = (...allowedRoles: string[]): RequestHandler => {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       const user = (req as AuthRequest).user;

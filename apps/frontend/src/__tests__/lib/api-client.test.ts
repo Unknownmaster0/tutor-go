@@ -42,10 +42,7 @@ vi.mock('axios', () => ({
 }));
 
 describe('ApiClient', () => {
-  const mockAccessToken = 'mock-access-token';
   const mockRefreshToken = 'mock-refresh-token';
-  const mockNewAccessToken = 'mock-new-access-token';
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   beforeEach(() => {
     vi.clearAllMocks();

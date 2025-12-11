@@ -89,7 +89,7 @@ describe('AuthService - Registration', () => {
       });
       expect(mockEmailService.sendVerificationEmail).toHaveBeenCalledWith(
         mockUser.email,
-        mockUser.name
+        mockUser.name,
       );
       expect(result).toEqual({
         id: mockUser.id,
@@ -164,7 +164,7 @@ describe('AuthService - Registration', () => {
           phone: registerData.phone,
         },
       });
-      expect(result.id).toBe(mockUser.id);
+      expect(result.user.id).toBe(mockUser.id);
     });
 
     it('should hash password with correct salt rounds', async () => {

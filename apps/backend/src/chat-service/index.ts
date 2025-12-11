@@ -76,7 +76,8 @@ app.get('/chat/health', (req, res) => {
 // API Routes
 import chatRoutes from './routes/chat.routes';
 
-app.use('/chat', chatRoutes);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use('/chat', chatRoutes as any);
 
 // Health check route
 app.get('/chat/status', (req, res) => {

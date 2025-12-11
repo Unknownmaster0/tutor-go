@@ -86,7 +86,7 @@ describe('TutorService', () => {
       (TutorProfile.findOne as jest.Mock).mockResolvedValue({ userId: 'user123' });
 
       await expect(tutorService.createProfile(createDto)).rejects.toThrow(
-        'Tutor profile already exists for this user'
+        'Tutor profile already exists for this user',
       );
     });
 
@@ -165,6 +165,7 @@ describe('TutorService', () => {
 
       const result = await tutorService.updateProfile('user123', updateDto);
 
+      expect(result).toBeDefined();
       expect(TutorProfile.findOne).toHaveBeenCalledWith({ userId: 'user123' });
       expect(mockProfile.save).toHaveBeenCalled();
       expect(mockProfile.bio).toBe('Updated bio');
@@ -179,7 +180,7 @@ describe('TutorService', () => {
       (TutorProfile.findOne as jest.Mock).mockResolvedValue(null);
 
       await expect(tutorService.updateProfile('user123', updateDto)).rejects.toThrow(
-        'Tutor profile not found'
+        'Tutor profile not found',
       );
     });
   });
@@ -269,7 +270,7 @@ describe('TutorService', () => {
       (TutorProfile.deleteOne as jest.Mock).mockResolvedValue({ deletedCount: 0 });
 
       await expect(tutorService.deleteProfile('user123')).rejects.toThrow(
-        'Tutor profile not found'
+        'Tutor profile not found',
       );
     });
   });

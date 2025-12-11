@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface GeolocationState {
   latitude: number | null;
@@ -39,7 +39,7 @@ export function useGeolocation() {
       },
       (error) => {
         let errorMessage = 'Unable to retrieve your location';
-        
+
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = 'Location permission denied';
@@ -63,7 +63,7 @@ export function useGeolocation() {
         enableHighAccuracy: true,
         timeout: 5000,
         maximumAge: 0,
-      }
+      },
     );
   };
 

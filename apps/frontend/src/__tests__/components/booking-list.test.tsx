@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BookingList from '@/components/booking/booking-list';
 import { Booking } from '@/types/booking.types';
@@ -145,21 +145,16 @@ describe('BookingList', () => {
 
     // Find status badges (not tab buttons)
     const badges = document.querySelectorAll('.px-3.py-1.rounded-full');
-    const confirmedBadge = Array.from(badges).find(el => el.textContent === 'Confirmed');
-    const pendingBadge = Array.from(badges).find(el => el.textContent === 'Pending');
-    
+    const confirmedBadge = Array.from(badges).find((el) => el.textContent === 'Confirmed');
+    const pendingBadge = Array.from(badges).find((el) => el.textContent === 'Pending');
+
     expect(confirmedBadge).toHaveClass('bg-green-100');
     expect(pendingBadge).toHaveClass('bg-yellow-100');
   });
 
   it('calls onViewDetails when view button is clicked', async () => {
     const user = userEvent.setup();
-    render(
-      <BookingList
-        bookings={mockBookings}
-        onViewDetails={mockOnViewDetails}
-      />
-    );
+    render(<BookingList bookings={mockBookings} onViewDetails={mockOnViewDetails} />);
 
     const viewButtons = screen.getAllByRole('button', { name: /View Details/i });
     await user.click(viewButtons[0]);
@@ -175,20 +170,15 @@ describe('BookingList', () => {
       startTime: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48 hours from now
       endTime: new Date(Date.now() + 49 * 60 * 60 * 1000),
     };
-    
-    render(
-      <BookingList
-        bookings={[futureBooking]}
-        onCancelBooking={mockOnCancelBooking}
-      />
-    );
+
+    render(<BookingList bookings={[futureBooking]} onCancelBooking={mockOnCancelBooking} />);
 
     // Get all buttons and find the one that's not a tab
     const allButtons = screen.getAllByRole('button');
-    const cancelButton = allButtons.find(btn => 
-      btn.textContent === 'Cancel' && !btn.className.includes('border-b-2')
+    const cancelButton = allButtons.find(
+      (btn) => btn.textContent === 'Cancel' && !btn.className.includes('border-b-2'),
     );
-    
+
     if (cancelButton) {
       await user.click(cancelButton);
       expect(mockOnCancelBooking).toHaveBeenCalledWith(futureBooking.id);
@@ -200,13 +190,13 @@ describe('BookingList', () => {
       <BookingList
         bookings={[mockBookings[2]]} // Completed booking
         onCancelBooking={mockOnCancelBooking}
-      />
+      />,
     );
 
     // Should only have View Details button, not Cancel action button
     const buttons = screen.queryAllByRole('button');
-    const cancelActionButtons = buttons.filter(btn => 
-      btn.textContent === 'Cancel' && !btn.className.includes('border-b-2')
+    const cancelActionButtons = buttons.filter(
+      (btn) => btn.textContent === 'Cancel' && !btn.className.includes('border-b-2'),
     );
     expect(cancelActionButtons.length).toBe(0);
   });
@@ -216,13 +206,13 @@ describe('BookingList', () => {
       <BookingList
         bookings={[mockBookings[3]]} // Cancelled booking
         onCancelBooking={mockOnCancelBooking}
-      />
+      />,
     );
 
     // Should only have View Details button, not Cancel action button
     const buttons = screen.queryAllByRole('button');
-    const cancelActionButtons = buttons.filter(btn => 
-      btn.textContent === 'Cancel' && !btn.className.includes('border-b-2')
+    const cancelActionButtons = buttons.filter(
+      (btn) => btn.textContent === 'Cancel' && !btn.className.includes('border-b-2'),
     );
     expect(cancelActionButtons.length).toBe(0);
   });

@@ -177,6 +177,7 @@ describe('AvailabilityManager', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/save failed/i)).toBeInTheDocument();
+      expect(mockPut).toHaveBeenCalled();
     });
   });
 
@@ -197,9 +198,9 @@ describe('AvailabilityManager', () => {
 
   it('disables save button while loading', async () => {
     const mockOnUpdate = vi.fn();
-    const mockPut = vi
-      .mocked(apiClient.put)
-      .mockImplementation(() => new Promise((resolve) => setTimeout(() => resolve({}), 100)));
+    vi.mocked(apiClient.put).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
+    );
 
     render(<AvailabilityManager profile={mockProfile} onUpdate={mockOnUpdate} />);
 

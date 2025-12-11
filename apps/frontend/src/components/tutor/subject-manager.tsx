@@ -10,7 +10,10 @@ interface SubjectManagerProps {
 
 export function SubjectManager({ profile, onUpdate }: SubjectManagerProps) {
   const [subjects, setSubjects] = useState<Subject[]>(profile.subjects || []);
-  const [newSubject, setNewSubject] = useState({ name: '', proficiency: 'intermediate' as const });
+  const [newSubject, setNewSubject] = useState<{
+    name: string;
+    proficiency: 'beginner' | 'intermediate' | 'expert';
+  }>({ name: '', proficiency: 'intermediate' });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -67,7 +70,10 @@ export function SubjectManager({ profile, onUpdate }: SubjectManagerProps) {
           <h4 className="text-sm font-semibold text-gray-900 mb-3">Add New Subject</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
-              <label htmlFor="subject-name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="subject-name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Subject Name
               </label>
               <input
