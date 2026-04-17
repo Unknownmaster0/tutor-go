@@ -27,9 +27,6 @@
     "db:seed": "ts-node prisma/seed.ts",
     "db:reset": "prisma migrate reset"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "prisma": "^6.19.0",
