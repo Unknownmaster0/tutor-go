@@ -56,8 +56,8 @@ export default function BookingNewPage() {
         // Note: studentId is extracted from auth middleware in backend
       });
 
-      // Redirect to booking confirmation or bookings page
-      router.push(`/bookings/${response?.id}?status=success`);
+      // Redirect to payment page
+      router.push(`/booking/${response?.id}/payment`);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Failed to create booking';
       throw new Error(errorMessage);

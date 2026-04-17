@@ -6,7 +6,14 @@ import { PaymentValidator } from '../validators/payment.validator';
 export const createPaymentRoutes = (controller: PaymentController): Router => {
   const router = Router();
 
-  // Create payment intent
+  // Create payment order (Razorpay)
+  router.post(
+    '/create-order',
+    PaymentValidator.createPaymentIntent(),
+    asyncHandler(controller.createPaymentIntent)
+  );
+
+  // Legacy endpoint name (for backwards compatibility)
   router.post(
     '/create-intent',
     PaymentValidator.createPaymentIntent(),
@@ -27,7 +34,7 @@ export const createPaymentRoutes = (controller: PaymentController): Router => {
     asyncHandler(controller.refundPayment)
   );
 
-  // Stripe webhook endpoint
+  // Razorpay webhook endpoint
   router.post('/webhook', asyncHandler(controller.handleWebhook));
 
   return router;

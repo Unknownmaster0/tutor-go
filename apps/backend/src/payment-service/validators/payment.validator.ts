@@ -23,11 +23,21 @@ export class PaymentValidator {
 
   static confirmPayment(): ValidationChain[] {
     return [
-      body('paymentIntentId')
+      body('orderId')
         .notEmpty()
-        .withMessage('Payment intent ID is required')
+        .withMessage('Order ID is required')
         .isString()
-        .withMessage('Payment intent ID must be a string'),
+        .withMessage('Order ID must be a string'),
+      body('paymentId')
+        .notEmpty()
+        .withMessage('Payment ID is required')
+        .isString()
+        .withMessage('Payment ID must be a string'),
+      body('signature')
+        .notEmpty()
+        .withMessage('Payment signature is required')
+        .isString()
+        .withMessage('Signature must be a string'),
       body('bookingId')
         .notEmpty()
         .withMessage('Booking ID is required')
@@ -54,3 +64,4 @@ export class PaymentValidator {
     ];
   }
 }
+
