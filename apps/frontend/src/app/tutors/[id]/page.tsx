@@ -26,13 +26,16 @@ export default function TutorProfilePage() {
         setLoading(true);
         setError(null);
 
-        // Fetch tutor profile
+        // Fetch tutor profile using MongoDB ObjectID
         const tutorData = await apiClient.get<TutorProfile>(`/tutors/${tutorId}`);
         setTutor(tutorData);
 
-        // Fetch reviews
-        const reviewsData = await apiClient.get<{ reviews: Review[] }>(`/reviews/tutor/${tutorId}`);
-        setReviews(reviewsData.reviews || []);
+        // Fetch reviews using PostgreSQL User ID (userId)
+        // The tutorId in the URL is a MongoDB ObjectID, but reviews are keyed by PostgreSQL User ID
+        if (tutorData.userId) {
+          const reviewsData = await apiClient.get<{ reviews: Review[] }>(`/reviews/tutor/${tutorData.userId}`);
+          setReviews(reviewsData.reviews || []);
+        }
       } catch (err: any) {
         console.error('Error fetching tutor profile:', err);
         setError(err.response?.data?.message || 'Failed to load tutor profile');
