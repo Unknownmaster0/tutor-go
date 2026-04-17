@@ -11,7 +11,7 @@ import { BookingsChart } from '@/components/admin/bookings-chart';
 import { ActivityFeed } from '@/components/admin/activity-feed';
 
 export default function AdminDashboard() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
@@ -87,12 +87,37 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8" data-testid="admin-dashboard">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="mt-2 text-gray-600">Monitor platform activity and key metrics</p>
+    <div className="min-h-screen bg-gray-50" data-testid="admin-dashboard">
+      {/* Admin Header */}
+      <nav className="bg-white shadow-sm sticky top-0 z-30" role="navigation" aria-label="Admin navigation">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-bold text-gray-900">TutorGo Admin</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-700">
+                <span className="font-medium">{user?.name}</span>
+                <span className="text-gray-500 ml-2">({user?.email})</span>
+              </span>
+              <button
+                onClick={logout}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Sign out"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
+      </nav>
+
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
+            <p className="mt-2 text-gray-600">Monitor platform activity and key metrics</p>
+          </div>
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -159,6 +184,7 @@ export default function AdminDashboard() {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
