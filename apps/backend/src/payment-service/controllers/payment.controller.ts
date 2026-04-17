@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { PaymentService } from '../services/payment.service';
 import { ApiResponse } from '../../shared';
-import Stripe from 'stripe';
-import { STRIPE_WEBHOOK_SECRET } from '../config/stripe.config';
+import crypto from 'crypto';
 
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
@@ -17,10 +16,10 @@ export class PaymentController {
       }
 
       const result = await this.paymentService.createPaymentIntent(req.body);
-      ApiResponse.success(res, result, 'Payment intent created successfully', 201);
+      ApiResponse.success(res, result, 'Payment order created successfully', 201);
     } catch (error: any) {
-      console.error('Error creating payment intent:', error);
-      ApiResponse.error(res, error.message || 'Failed to create payment intent', 500);
+      console.error('Error creating payment order:', error);
+      ApiResponse.error(res, error.message || 'Failed to create payment order', 500);
     }
   };
 
@@ -58,28 +57,31 @@ export class PaymentController {
 
   handleWebhook = async (req: Request, res: Response): Promise<void> => {
     try {
-      const sig = req.headers['stripe-signature'] as string;
+      const signature = req.headers['x-razorpay-signature'] as string;
 
-      if (!sig) {
-        ApiResponse.error(res, 'Missing stripe signature', 400);
+      if (!signature) {
+        ApiResponse.error(res, 'Missing Razorpay signature', 400);
         return;
       }
 
-      let event: Stripe.Event;
-
       try {
-        event = Stripe.webhooks.constructEvent(
-          req.body,
-          sig,
-          STRIPE_WEBHOOK_SECRET
-        );
+        // Verify webhook signature
+        const shasum = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '');
+        shasum.update(JSON.stringify(req.body));
+        const digest = shasum.digest('hex');
+
+        if (digest !== signature) {
+          console.error('Webhook signature verification failed');
+          ApiResponse.error(res, 'Webhook signature verification failed', 400);
+          return;
+        }
       } catch (err: any) {
         console.error('Webhook signature verification failed:', err.message);
         ApiResponse.error(res, 'Webhook signature verification failed', 400);
         return;
       }
 
-      await this.paymentService.handleWebhookEvent(event);
+      await this.paymentService.handleWebhookEvent(req.body);
       ApiResponse.success(res, null, 'Webhook processed successfully');
     } catch (error: any) {
       console.error('Error handling webhook:', error);
