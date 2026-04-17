@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/auth-context';
 import { SearchFilters, FilterValues } from '@/components/search/search-filters';
 import { TutorMap } from '@/components/map/tutor-map';
 import { TutorProfile } from '@/types/tutor.types';
@@ -11,6 +12,8 @@ import { calculateDistance, formatDistance } from '@/lib/distance-calculator';
 
 export default function SearchPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user, logout, isAuthenticated } = useAuth();
   const {
     latitude: userLat,
     longitude: userLng,
@@ -162,6 +165,14 @@ export default function SearchPageContent() {
     setSelectedTutor(tutor);
   };
 
+  const handleBookNow = (tutor: TutorProfile) => {
+    router.push(`/booking/new?tutorId=${tutor.id}`);
+  };
+
+  const handleViewProfile = (tutor: TutorProfile) => {
+    router.push(`/tutors/${tutor.id}`);
+  };
+
   // Auto-fetch tutors when current location is obtained
   useEffect(() => {
     if (userLat && userLng && !filtersApplied.current && tutors.length > 0) {
@@ -188,8 +199,33 @@ export default function SearchPageContent() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-20">
+      {/* Navigation Header */}
+      {isAuthenticated && (
+        <nav className="bg-white shadow-soft sticky top-0 z-30" role="navigation" aria-label="Main navigation">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+              <div className="flex items-center">
+                <h1 className="text-xl font-bold text-primary-600">TutorGo</h1>
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-neutral-700">
+                  Welcome, <span className="font-semibold">{user?.name}</span>
+                </span>
+                <button
+                  onClick={logout}
+                  className="px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors"
+                  aria-label="Sign out"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+      )}
+
+      {/* Search Header */}
+      <div className="bg-white shadow-sm sticky z-20" style={{ top: isAuthenticated ? '4rem' : '0' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
@@ -264,7 +300,7 @@ export default function SearchPageContent() {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
           <aside className="lg:col-span-1">
-            <div className="sticky top-32">
+            <div className="sticky" style={{ top: isAuthenticated ? '12rem' : '10rem' }}>
               <SearchFilters
                 onFilterChange={handleFilterChange}
                 onApplyFilters={handleApplyFilters}
@@ -366,7 +402,11 @@ export default function SearchPageContent() {
                           </p>
                         )}
                       </div>
-                      <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 transition-colors font-medium">
+                      <button
+                        onClick={() => handleViewProfile(selectedTutor)}
+                        className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 transition-colors font-medium"
+                        aria-label={`View profile of ${selectedTutor.name}`}
+                      >
                         View Profile
                       </button>
                     </div>
@@ -483,10 +523,18 @@ export default function SearchPageContent() {
 
                       {/* Right Side - Actions */}
                       <div className="flex flex-col gap-2 sm:w-32">
-                        <button className="w-full px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm">
+                        <button
+                          onClick={() => handleBookNow(tutor)}
+                          className="w-full px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
+                          aria-label={`Book session with ${tutor.name}`}
+                        >
                           Book Now
                         </button>
-                        <button className="w-full px-4 py-2.5 border border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium text-sm">
+                        <button
+                          onClick={() => handleViewProfile(tutor)}
+                          className="w-full px-4 py-2.5 border border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium text-sm"
+                          aria-label={`View profile of ${tutor.name}`}
+                        >
                           View Profile
                         </button>
                       </div>
