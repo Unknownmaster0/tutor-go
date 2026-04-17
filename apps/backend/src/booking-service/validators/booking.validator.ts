@@ -2,7 +2,7 @@ import { body, param, query } from 'express-validator';
 
 export const createBookingValidator = [
   body('tutorId').isUUID().withMessage('Tutor ID must be a valid UUID'),
-  body('studentId').isUUID().withMessage('Student ID must be a valid UUID'),
+  // studentId is extracted from auth middleware, not required in body
   body('subject').isString().trim().notEmpty().withMessage('Subject is required'),
   body('startTime').isISO8601().withMessage('Start time must be a valid ISO 8601 date'),
   body('endTime').isISO8601().withMessage('End time must be a valid ISO 8601 date'),

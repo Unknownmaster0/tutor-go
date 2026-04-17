@@ -8,11 +8,21 @@ interface BookingFormProps {
   tutor: TutorProfile;
   onSubmit: (data: BookingFormData) => Promise<void>;
   onCancel?: () => void;
+  preselectedDate?: string; // ISO date string (YYYY-MM-DD)
+  preselectedStartTime?: string; // HH:MM format
+  preselectedEndTime?: string; // HH:MM format
 }
 
-export default function BookingForm({ tutor, onSubmit, onCancel }: BookingFormProps) {
+export default function BookingForm({ 
+  tutor, 
+  onSubmit, 
+  onCancel,
+  preselectedDate,
+  preselectedStartTime,
+  preselectedEndTime,
+}: BookingFormProps) {
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(preselectedDate || '');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
   const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(false);
@@ -27,33 +37,74 @@ export default function BookingForm({ tutor, onSubmit, onCancel }: BookingFormPr
 
   const totalAmount = calculateAmount(selectedTimeSlot);
 
-  // Generate mock time slots for the selected date
+  // Generate time slots based on tutor's actual availability
   useEffect(() => {
     if (selectedDate) {
-      // In a real app, this would fetch from the API
-      const slots: TimeSlot[] = [];
       const date = new Date(selectedDate);
-      
-      // Generate slots from 9 AM to 5 PM
-      for (let hour = 9; hour < 17; hour++) {
-        const startTime = new Date(date);
-        startTime.setHours(hour, 0, 0, 0);
-        
-        const endTime = new Date(date);
-        endTime.setHours(hour + 1, 0, 0, 0);
-        
-        slots.push({
-          startTime,
-          endTime,
-          available: Math.random() > 0.3, // Mock availability
+      const dayOfWeek = date.getDay(); // 0-6 (Sunday-Saturday)
+      const slots: TimeSlot[] = [];
+
+      // Get tutor's availability for this day of week
+      const dayAvailability = tutor.availability?.filter(
+        (slot) => slot.dayOfWeek === dayOfWeek
+      ) || [];
+
+      if (dayAvailability.length > 0) {
+        // Generate 1-hour slots within tutor's available time
+        dayAvailability.forEach((availabilitySlot) => {
+          const [startHour, startMin] = availabilitySlot.startTime.split(':').map(Number);
+          const [endHour, endMin] = availabilitySlot.endTime.split(':').map(Number);
+
+          // Generate 1-hour slots
+          let currentHour = startHour;
+          let currentMin = startMin;
+
+          while (currentHour < endHour || (currentHour === endHour && currentMin < endMin)) {
+            const slotStart = new Date(date);
+            slotStart.setHours(currentHour, currentMin, 0, 0);
+
+            const slotEnd = new Date(slotStart);
+            slotEnd.setHours(slotEnd.getHours() + 1);
+
+            // Only add if end time doesn't exceed availability
+            if (slotEnd.getHours() < endHour || (slotEnd.getHours() === endHour && slotEnd.getMinutes() <= endMin)) {
+              slots.push({
+                startTime: slotStart,
+                endTime: slotEnd,
+                available: true, // These are available slots only
+              });
+            }
+
+            currentHour = slotEnd.getHours();
+            currentMin = slotEnd.getMinutes();
+          }
         });
       }
-      
+
       setAvailableSlots(slots);
+
+      // If preselected time is provided, find and select the matching slot
+      if (preselectedStartTime && preselectedEndTime && slots.length > 0) {
+        const [startHour, startMin] = preselectedStartTime.split(':').map(Number);
+        const [endHour, endMin] = preselectedEndTime.split(':').map(Number);
+
+        const matchingSlot = slots.find((slot) => {
+          return (
+            slot.startTime.getHours() === startHour &&
+            slot.startTime.getMinutes() === startMin &&
+            slot.endTime.getHours() === endHour &&
+            slot.endTime.getMinutes() === endMin
+          );
+        });
+
+        if (matchingSlot) {
+          setSelectedTimeSlot(matchingSlot);
+        }
+      }
     } else {
       setAvailableSlots([]);
     }
-  }, [selectedDate]);
+  }, [selectedDate, preselectedStartTime, preselectedEndTime, tutor.availability]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,6 +165,23 @@ export default function BookingForm({ tutor, onSubmit, onCancel }: BookingFormPr
     });
   };
 
+  // Get formatted availability schedule for display
+  const getAvailabilityDisplay = (): string => {
+    const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const availabilityByDay = tutor.availability?.reduce((acc, slot) => {
+      const day = DAYS[slot.dayOfWeek];
+      if (!acc[day]) {
+        acc[day] = [];
+      }
+      acc[day].push(`${slot.startTime} - ${slot.endTime}`);
+      return acc;
+    }, {} as Record<string, string[]>) || {};
+
+    return Object.entries(availabilityByDay)
+      .map(([day, times]) => `${day}: ${times.join(', ')}`)
+      .join(' | ');
+  };
+
   // Get minimum date (today)
   const minDate = new Date().toISOString().split('T')[0];
 
@@ -126,6 +194,12 @@ export default function BookingForm({ tutor, onSubmit, onCancel }: BookingFormPr
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="font-semibold text-lg mb-2">{tutor.name}</h3>
           <p className="text-gray-600">${tutor.hourlyRate}/hour</p>
+        </div>
+
+        {/* Availability Info */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm font-medium text-blue-900 mb-1">Available Times:</p>
+          <p className="text-sm text-blue-800">{getAvailabilityDisplay()}</p>
         </div>
 
         {/* Subject Selection */}
@@ -174,26 +248,29 @@ export default function BookingForm({ tutor, onSubmit, onCancel }: BookingFormPr
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Time Slot
             </label>
-            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-              {availableSlots.map((slot, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => slot.available && setSelectedTimeSlot(slot)}
-                  disabled={!slot.available}
-                  className={`p-3 rounded-lg border-2 text-sm font-medium transition-colors ${
-                    selectedTimeSlot === slot
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : slot.available
-                      ? 'border-gray-300 hover:border-blue-300 hover:bg-gray-50'
-                      : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                  {!slot.available && <span className="block text-xs">Unavailable</span>}
-                </button>
-              ))}
-            </div>
+            {availableSlots.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                {availableSlots.map((slot, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setSelectedTimeSlot(slot)}
+                    className={`p-3 rounded-lg border-2 text-sm font-medium transition-colors ${
+                      selectedTimeSlot === slot
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+                <p className="font-medium">No available slots</p>
+                <p className="text-sm">The tutor is not available on this date. Please select another date.</p>
+              </div>
+            )}
           </div>
         )}
 
