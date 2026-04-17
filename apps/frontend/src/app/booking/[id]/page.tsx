@@ -3,6 +3,7 @@
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
+import { BackButton } from '@/components/common/back-button';
 import { Booking } from '@/types/booking.types';
 
 export default function BookingDetailsPage() {
