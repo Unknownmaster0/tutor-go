@@ -1,12 +1,28 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useAuth } from '@/contexts/auth-context';
 import { SearchBar } from '@/components/search/search-bar';
 
 export default function Home() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   const handleSearch = async (location: string, latitude?: number, longitude?: number) => {
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(`/search?location=${encodeURIComponent(location)}`)}`);
+      return;
+    }
+
     // If we have coordinates, use them directly
     if (latitude && longitude) {
       router.push(`/search?lat=${latitude}&lng=${longitude}&radius=10`);
@@ -22,6 +38,20 @@ export default function Home() {
       console.error('Search error:', error);
     }
   };
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Show home page only for unauthenticated users
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen">

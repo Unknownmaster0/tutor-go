@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api-client';
+import { BackButton } from '@/components/common/back-button';
 import { TutorProfile } from '@/types/tutor.types';
 import BookingForm from '@/components/booking/booking-form';
 import { BookingFormData } from '@/types/booking.types';

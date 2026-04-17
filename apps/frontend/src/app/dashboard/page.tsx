@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { ProtectedRoute } from '@/components/auth/protected-route';
+import { BackButton } from '@/components/common/back-button';
 import { useTeachers } from '@/hooks/use-teachers';
 import { useBookings } from '@/hooks/use-bookings';
 import { useConversations } from '@/hooks/use-conversations';
@@ -131,8 +132,11 @@ function DashboardContent() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <h1 className="text-xl font-bold text-primary-600">TutorGo</h1>
+              <div className="hidden sm:block border-l border-slate-200 pl-4">
+                <BackButton label="Home" />
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-neutral-700">
