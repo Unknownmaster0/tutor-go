@@ -3,6 +3,8 @@ import { BookingService } from '../services';
 import { CreateBookingDto, UpdateBookingStatusDto, CancelBookingDto } from '../dto';
 import { BookingStatus } from '@prisma/client';
 
+import { ApiResponse } from '../../shared';
+
 export class BookingController {
   private bookingService: BookingService;
 
@@ -12,25 +14,25 @@ export class BookingController {
 
   createBooking = async (req: Request, res: Response): Promise<void> => {
     try {
+      const userId = (req as any).user?.userId;
+      if (!userId) {
+        ApiResponse.error(res, 'Unauthorized', 401);
+        return;
+      }
+
       const data: CreateBookingDto = {
         ...req.body,
+        studentId: userId,
         startTime: new Date(req.body.startTime),
         endTime: new Date(req.body.endTime),
       };
 
       const booking = await this.bookingService.createBooking(data);
 
-      res.status(201).json({
-        success: true,
-        data: booking,
-      });
+      ApiResponse.success(res, booking, 'Booking created successfully', 201);
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to create booking',
-        },
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create booking';
+      ApiResponse.error(res, errorMessage, 400);
     }
   };
 
@@ -41,26 +43,14 @@ export class BookingController {
       const booking = await this.bookingService.getBookingById(id);
 
       if (!booking) {
-        res.status(404).json({
-          success: false,
-          error: {
-            message: 'Booking not found',
-          },
-        });
+        ApiResponse.error(res, 'Booking not found', 404);
         return;
       }
 
-      res.status(200).json({
-        success: true,
-        data: booking,
-      });
+      ApiResponse.success(res, booking, 'Booking retrieved successfully');
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to get booking',
-        },
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get booking';
+      ApiResponse.error(res, errorMessage, 500);
     }
   };
 
@@ -89,17 +79,10 @@ export class BookingController {
 
       const bookings = await this.bookingService.getUserBookings(userId, filters);
 
-      res.status(200).json({
-        success: true,
-        data: bookings,
-      });
+      ApiResponse.success(res, bookings, 'Bookings retrieved successfully');
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to get bookings',
-        },
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get bookings';
+      ApiResponse.error(res, errorMessage, 500);
     }
   };
 
@@ -110,17 +93,10 @@ export class BookingController {
 
       const booking = await this.bookingService.updateBookingStatus(id, data);
 
-      res.status(200).json({
-        success: true,
-        data: booking,
-      });
+      ApiResponse.success(res, booking, 'Booking status updated successfully');
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to update booking status',
-        },
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update booking status';
+      ApiResponse.error(res, errorMessage, 400);
     }
   };
 
@@ -131,17 +107,10 @@ export class BookingController {
 
       const booking = await this.bookingService.cancelBooking(id, data);
 
-      res.status(200).json({
-        success: true,
-        data: booking,
-      });
+      ApiResponse.success(res, booking, 'Booking cancelled successfully');
     } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to cancel booking',
-        },
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Failed to cancel booking';
+      ApiResponse.error(res, errorMessage, 400);
     }
   };
 }
