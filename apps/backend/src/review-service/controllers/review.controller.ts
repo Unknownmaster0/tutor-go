@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ReviewService } from '../services/review.service';
 import { validationResult } from 'express-validator';
+import { ApiResponse } from '../../shared';
 
 export class ReviewController {
   private reviewService: ReviewService;
@@ -13,29 +14,29 @@ export class ReviewController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json({ errors: errors.array() });
+        ApiResponse.error(res, 'Validation failed', 400, errors.array());
         return;
       }
 
       const review = await this.reviewService.createReview(req.body);
-      res.status(201).json(review);
+      ApiResponse.success(res, review, 'Review created successfully', 201);
     } catch (error) {
       if (error instanceof Error) {
         if (
           error.message.includes('not found') ||
           error.message.includes('does not match')
         ) {
-          res.status(404).json({ error: error.message });
+          ApiResponse.error(res, error.message, 404);
         } else if (
           error.message.includes('already exists') ||
           error.message.includes('Can only review')
         ) {
-          res.status(400).json({ error: error.message });
+          ApiResponse.error(res, error.message, 400);
         } else {
-          res.status(500).json({ error: 'Failed to create review' });
+          ApiResponse.error(res, 'Failed to create review', 500);
         }
       } else {
-        res.status(500).json({ error: 'Failed to create review' });
+        ApiResponse.error(res, 'Failed to create review', 500);
       }
     }
   };
@@ -44,7 +45,7 @@ export class ReviewController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json({ errors: errors.array() });
+        ApiResponse.error(res, 'Validation failed', 400, errors.array());
         return;
       }
 
@@ -58,9 +59,9 @@ export class ReviewController {
         includeFlagged: false,
       });
 
-      res.status(200).json(result);
+      ApiResponse.success(res, result, 'Reviews retrieved successfully');
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch reviews' });
+      ApiResponse.error(res, 'Failed to fetch reviews', 500);
     }
   };
 
@@ -68,7 +69,7 @@ export class ReviewController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json({ errors: errors.array() });
+        ApiResponse.error(res, 'Validation failed', 400, errors.array());
         return;
       }
 
@@ -76,12 +77,12 @@ export class ReviewController {
       const { flagged } = req.body;
 
       const review = await this.reviewService.flagReview(reviewId, flagged);
-      res.status(200).json(review);
+      ApiResponse.success(res, review, 'Review flagged successfully');
     } catch (error) {
       if (error instanceof Error && error.message.includes('not found')) {
-        res.status(404).json({ error: error.message });
+        ApiResponse.error(res, error.message, 404);
       } else {
-        res.status(500).json({ error: 'Failed to flag review' });
+        ApiResponse.error(res, 'Failed to flag review', 500);
       }
     }
   };
