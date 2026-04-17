@@ -4,8 +4,9 @@ services:
     container_name: tutorgo-postgres
     environment:
       POSTGRES_DB: tutorgo
-      POSTGRES_USER: tutorgo
       POSTGRES_PASSWORD: password
+      POSTGRES_USER: tutorgo
+      POSTGRES_INITDB_ARGS: "-c password_encryption=scram-sha-256"
     ports:
       - "5432:5432"
     volumes:
