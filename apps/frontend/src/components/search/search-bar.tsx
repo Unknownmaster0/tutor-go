@@ -37,7 +37,7 @@ export function SearchBar({ onSearch, className = '' }: SearchBarProps) {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Enter location (city, address, or zip code)"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
           />
           {error && (
             <p className="absolute text-xs text-red-500 mt-1">{error}</p>
