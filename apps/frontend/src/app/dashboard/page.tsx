@@ -100,13 +100,18 @@ function DashboardContent() {
     isLoading: bookingsLoading,
     error: bookingsError,
     refetch: refetchBookings,
-  } = useBookings(user?.id || '', { status: 'completed' });
+  } = useBookings(user?.id || ''); // Fetch ALL bookings, not just completed
   const {
     conversations,
     isLoading: conversationsLoading,
     error: conversationsError,
     refetch: refetchConversations,
   } = useConversations(user?.id || '');
+
+  // Sort bookings by most recent first
+  const sortedBookings = [...bookings].sort(
+    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+  );
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -184,7 +189,7 @@ function DashboardContent() {
                   </div>
                 ) : bookings.length > 0 ? (
                   <div className="space-y-4" role="list" aria-label="Recent bookings">
-                    {bookings.slice(0, 5).map((booking) => (
+                    {sortedBookings.slice(0, 5).map((booking) => (
                       <div key={booking.id} role="listitem">
                         <BookingHistoryCard booking={booking} />
                       </div>
